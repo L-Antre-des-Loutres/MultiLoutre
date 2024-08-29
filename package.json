@@ -60,6 +60,7 @@
     "minimatch": "^3.1.2",
     "ms": "^2.1.2",
     "natural-compare": "^1.4.0",
+    "node-fetch": "^2.7.0",
     "optionator": "^0.9.4",
     "p-limit": "^3.1.0",
     "p-locate": "^5.0.0",
