@@ -93,6 +93,7 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             } else {
                 const embed = new EmbedBuilder()
                 .setTitle(playername)
@@ -105,8 +106,8 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             }
-            channel.send({ embeds: [embed] });
         }
         
         function sendPlayerAdvancement() {}
@@ -124,6 +125,7 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             } else {
                 const embed = new EmbedBuilder()
                 .setTitle("Connexion de " + playername + ' sur le serveur "' + servSecondaireConfigs.nom_serv + '"')
@@ -133,8 +135,8 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             }
-            channel.send({ embeds: [embed] });
         }
 
         function sendPlayerLeaving(playername, serveur) {
@@ -148,6 +150,7 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             } else {
                 const embed = new EmbedBuilder()
                 .setTitle("Déconnexion de " + playername + ' du serveur "' + servSecondaireConfigs.nom_serv + '"')
@@ -157,8 +160,8 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             }
-            channel.send({ embeds: [embed] });
         }
 
         function sendServerStarting(server) {
@@ -173,6 +176,7 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             }
             else {
                 const embed = new EmbedBuilder()
@@ -184,8 +188,8 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             }
-            channel.send({ embeds: [embed] });
         }
 
         function sendServerStopping(server) {
@@ -200,6 +204,7 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             }
             else {
                 const embed = new EmbedBuilder()
@@ -211,8 +216,8 @@ module.exports = {
                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
                 })
                 .setTimestamp();
+                channel.send({ embeds: [embed] });
             }
-            channel.send({ embeds: [embed] });
         }
 
         function sendServerCrash() {}
@@ -236,7 +241,7 @@ module.exports = {
         
         // Vérifiez si le fichier de log pour le serveur primaire existe
         if (!fs.existsSync(logFilePrimaire)) {
-            console.warn(`[WARN] Le fichier de log n'existe pas : ${logFilePrimaire}`);
+            console.error(`[ERROR] Le fichier de log n'existe pas : ${logFilePrimaire}`);
             return;
         } else {
             console.log(`[INFO] Démarrage de la surveillance des logs du serveur primaire : ${logFilePrimaire}`);
@@ -285,7 +290,7 @@ module.exports = {
         }
 
         if (!fs.existsSync(logFileSecondaire)) {
-            console.warn(`[WARN] Le fichier de log n'existe pas : ${logFileSecondaire}`);
+            console.error(`[ERROR] Le fichier de log n'existe pas : ${logFileSecondaire}`);
             return;
         } else {
             console.log(`[INFO] Démarrage de la surveillance des logs du serveur secondaire : ${logFileSecondaire}`);
