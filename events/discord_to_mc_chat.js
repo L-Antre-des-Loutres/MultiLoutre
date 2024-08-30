@@ -26,7 +26,7 @@ module.exports = {
 
             try {
                 rcon = await Rcon.connect(rconOptions);
-                console.log('[INFO] Connexion au RCON établie.');
+                // console.log('[INFO] Connexion au RCON établie.');
             } catch (error) {
                 console.error('[ERROR] Erreur lors de la connexion au RCON:', error.message);
                 return;
@@ -36,7 +36,7 @@ module.exports = {
         // Ajout de cette attente pour s'assurer que la connexion RCON est prête
         await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde
 
-        console.log('[INFO] Reçu de discord, retransmission sur minecraft: ', message.content);
+        // console.log('[INFO] Reçu de discord, retransmission sur minecraft: "' + message.content + '"');
 
         try {
             // Vérification de la connexion RCON
