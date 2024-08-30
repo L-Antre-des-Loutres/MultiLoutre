@@ -1,4 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
+const { Rcon } = require('rcon-client');
 const { Tail } = require('tail');
 const fs = require('fs');
 
@@ -79,7 +80,7 @@ module.exports = {
         }
 
         // Function d'envoi des messages dans les salons discord ----------------------------------------------
-        function sendPlayerMessage(playername, message, serveur) {
+        async function sendPlayerMessage(playername, message, serveur) {
             // Embed pour les messages des joueurs
             if (serveur === "primaire") {
                 const embed = new EmbedBuilder()
@@ -108,13 +109,48 @@ module.exports = {
                 .setTimestamp();
                 channel.send({ embeds: [embed] });
             }
+
+            // Envoi du message sur le serveur où le joueur n'est pas
+            try {
+                let rconOptions;
+                let embedColor;
+                if (serveur === "primaire") {
+                    // Envoi du message sur le serveur secondaire
+                    rconOptions = {
+                        host: "194.164.76.165",
+                        port: 25574,
+                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
+                    };
+                    embedColor = servPrimaireConfigs.embedColor;
+                } else {
+                    // Envoi du message sur le serveur primaire
+                    rconOptions = {
+                        host: "194.164.76.165",
+                        port: 25575,
+                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
+                    };
+                    embedColor = servSecondaireConfigs.embedColor
+                }
+
+                try {
+                    rcon = await Rcon.connect(rconOptions);
+                } catch (error) {
+                    console.error('[ERROR] Erreur lors de la connexion au RCON du serveur secondaire : ', error.message);
+                    return;
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde
+                await rcon.send(`tellraw @a ["",{"text":"<${playername}>","color":"`+embedColor+`","hoverEvent":{"action":"show_text","contents":"Message envoyé depuis un autre serveur Minecraft."}},{"text":" ${message}"}]`);
+            } catch (error) {
+                console.error(`[ERROR] Erreur lors de l'envoi du message sur le serveur opposé : ${error.message}`);
+            }
         }
         
         function sendPlayerAdvancement() {}
 
         function sendPlayerDeath() {}
 
-        function sendPlayerJoining(playername, serveur) {
+        async function sendPlayerJoining(playername, serveur) {
             // Embed pour les messages de connexion des joueurs
             if (serveur === "primaire") {
                 const embed = new EmbedBuilder()
@@ -136,6 +172,41 @@ module.exports = {
                 })
                 .setTimestamp();
                 channel.send({ embeds: [embed] });
+            }
+            
+            // Envoi du message sur le serveur où le joueur n'est pas
+            try {
+                let rconOptions;
+                let serveurname;
+                if (serveur === "primaire") {
+                    // Envoi du message sur le serveur secondaire
+                    rconOptions = {
+                        host: "vanilla.antredesloutres.fr",
+                        port: 25574,
+                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
+                    };
+                    serveurname = servPrimaireConfigs.nom_serv;
+                } else {
+                    // Envoi du message sur le serveur primaire
+                    rconOptions = {
+                        host: "vanilla.antredesloutres.fr",
+                        port: 25575,
+                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
+                    };
+                    serveurname = servSecondaireConfigs.nom_serv
+                }
+
+                try {
+                    rcon = await Rcon.connect(rconOptions);
+                } catch (error) {
+                    console.error('[ERROR] Erreur lors de la connexion au RCON du serveur opposé : ', error.message);
+                    return;
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde
+                await rcon.send(`/tellraw @a {"text":"${playername} à rejoint le serveur \"${serveurname}\" !","color":"yellow"}`);
+            } catch (error) {
+                console.error(`[ERROR] Erreur lors de l'envoi du message sur le serveur opposé : ${error.message}`);
             }
         }
 
@@ -231,7 +302,6 @@ module.exports = {
         
         let logFilePrimaire = servPrimaireConfigs.path_serv + '/logs/latest.log';
         let logFileSecondaire = servSecondaireConfigs.path_serv + '/logs/latest.log';
-        logFileSecondaire = "safeToDelete.log"
         
         // A changer l'utilisation des id par des noms de salons
         const channelId = '1159113861593579612'; // ID du salon dans lequel envoyer juste les messages du chat (🌌・discu-mc)
@@ -337,9 +407,9 @@ module.exports = {
             });
         }
 
-        tail.on('error', (err) => {
-            console.error(`[ERROR] Erreur de lecture du fichier de log : ${err.message}`);
-        });
+        // tail.on('error', (err) => {
+            // console.error(`[ERROR] Erreur de lecture du fichier de log : ${err.message}`);
+        // });
 
         // Assurez-vous de fermer le tail proprement lorsque le bot se déconnecte ou redémarre
         client.on(Events.ClientDestroy, () => {

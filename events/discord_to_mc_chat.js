@@ -1,6 +1,6 @@
 const { Rcon } = require('rcon-client');
 const { Events } = require('discord.js');
-let rconSecondaireActif = false;
+let rconSecondaireActif = true;
 let rconPrimaire;
 let rconSecondaire;
 
@@ -8,11 +8,23 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         // Réquete vers l'API de l'Antre des Loutres pour récupérer les informations des serveurs primaires et secondaires
-        let apiData = await fetch('https://api.antredesloutres.fr/serveurs/primaire/actif');
-        const servPrimaireConfigs = await apiData.json();
+        let servPrimaireConfigs;
+        let servSecondaireConfigs;
+        try {
+            let apiData = await fetch('https://api.antredesloutres.fr/serveurs/primaire/actif');
+            servPrimaireConfigs = await apiData.json();
+        } catch (error) {
+            console.error('[ERROR] Erreur lors de la récupération des informations du serveur primaire : ', error.message);
+            return;
+        }
 
-        apiData = await fetch('https://api.antredesloutres.fr/serveurs/secondaire/actif');
-        const servSecondaireConfigs = await apiData.json();
+        try {
+            let apiData = await fetch('https://api.antredesloutres.fr/serveurs/secondaire/actif');
+            servSecondaireConfigs = await apiData.json();
+        } catch (error) {
+            console.error('[ERROR] Erreur lors de la récupération des informations du serveur secondaire : ', error.message);
+            return;
+        }
 
         // Canal de discussion entre Discord et Minecraft
         const channelDiscuMC = "1159113861593579612"
@@ -29,7 +41,7 @@ module.exports = {
         if (!rconPrimaire || rconPrimaire.ended) {
             // Si la connexion RCON n'existe pas ou a été interrompue, ont essaye de se reconnecter
             const rconPrimaireOptions = {
-                host: "vanilla.antredesloutres.fr",
+                host: "194.164.76.165",
                 port: 25575,
                 password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
             };
@@ -48,8 +60,8 @@ module.exports = {
             if (!rconSecondaire || rconSecondaire.ended) {
                 // Si la connexion RCON n'existe pas ou a été interrompue, ont essaye de se reconnecter
                 const rconSecondaireOptions = {
-                    host: "secondaire.antredesloutres.fr",
-                    port: 25575,
+                    host: "194.164.76.165",
+                    port: 25574,
                     password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
                 };
     

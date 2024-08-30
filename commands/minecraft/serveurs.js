@@ -32,14 +32,14 @@ module.exports = {
                 throw new Error(`[ERROR] Erreur HTTP : ${response.status}`);
             }
             const data = await response.json();
-            console.log('[INFO] Données récupérées avec succès : ', data);
+            // console.log('[INFO] Données récupérées avec succès : ', data);
 
             const choices = data.map(element => ({
                 name: element.nom_serv,
                 value: element.id_serv
             }));
 
-            console.log('[INFO] Envoi des données pour l\'autocomplétion : ', choices);
+            // console.log('[INFO] Envoi des données pour l\'autocomplétion : ', choices);
             await interaction.respond(choices);
         } catch (error) {
             console.error('[ERROR] Erreur lors de la récupération des données pour l\'autocomplétion : ', error);
@@ -69,7 +69,7 @@ module.exports = {
                 'Mmmmh il manque le serveur pour effectuer l\'action 🥸',
                 'Ouais mais en fait il faut choisir un serveur pour effectuer une action 🥸'
             ];
-            console.log('[INFO] ' + interaction.user.username + ' a oublié de choisir un serveur. Réponse aléatoire renvoyée.');
+            // console.log('[INFO] ' + interaction.user.username + ' a oublié de choisir un serveur. Réponse aléatoire renvoyée.');
             await interaction.reply('' + responses[Math.floor(Math.random() * responses.length)]);
             return;
         }
@@ -89,7 +89,7 @@ module.exports = {
                     'Il faut choisir une action pour pouvoir effectuer une action 🥸',
                     "D'accord mais je ne sais pas quoi faire si vous ne choisissez pas une action 🥸",
                 ];
-                console.log('[INFO] ' + interaction.user.username + ' a oublié de choisir une action. Réponse aléatoire renvoyée.');
+                // console.log('[INFO] ' + interaction.user.username + ' a oublié de choisir une action. Réponse aléatoire renvoyée.');
                 await interaction.reply('' + responses[Math.floor(Math.random() * responses.length)]);
                 return;
             }
@@ -106,11 +106,12 @@ module.exports = {
             }
 
             const data = await response.json();
-            console.log('[INFO] Résultat de la requête:', data);
+            // console.log('[INFO] Résultat de la requête:', data);
 
             if (data.status === "0") {
                 await interaction.reply(`Le serveur est déjà ${action === 'lancer' ? 'démarré' : 'arrêté'}.`);
             } else {
+                console.log(`[INFO] ${interaction.user.username} a ${action === 'lancer' ? 'démarré' : 'arrêté'} le serveur ${id_serv}.`);
                 await interaction.reply(`Le serveur est en cours de ${action === 'lancer' ? 'démarrage' : 'arrêt'}.`);
             }
         } catch (error) {
