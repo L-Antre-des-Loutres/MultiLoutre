@@ -98,28 +98,5 @@ module.exports = {
             const channel = guild.channels.cache.find(channel => channel.name === '❌logs-erreur-mineotter');
             channel.send(`**[ERROR]** Erreur lors de la récupération des données sur l'API : ${error}`);
         }
-
-        // Zone ou ont écoute les logs minecraft
-        const logFile = '/home/serveurs/minecraft/vanilla/logs/latest.log';
-        const channelId = '1159113861593579612'; // ID du salon dans lequel envoyer les logs
-        fs.watchFile(logFile, (curr, prev) => {
-            fs.readFile(logFile, 'utf8', (err, data) => {
-                if (err) throw err;
-    
-                // Récupère les nouvelles lignes ajoutées au fichier de log
-                const logLines = data.split('\n');
-                const lastLine = logLines[logLines.length - 2];
-    
-                if (lastLine) {
-                    const channel = client.channels.cache.get(channelId);
-                    if (channel) {
-                        channel.send(lastLine);
-                    } else {
-                        console.log('Salon Discord non trouvé');
-                    }
-                }
-            });
-        });
-
     },
 };
