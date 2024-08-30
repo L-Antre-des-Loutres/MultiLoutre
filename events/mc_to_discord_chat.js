@@ -175,13 +175,13 @@ module.exports = {
             }
             
             // Envoi du message sur le serveur où le joueur n'est pas
+            let rconOptions;
+            let serveurname;
             try {
-                let rconOptions;
-                let serveurname;
                 if (serveur === "primaire") {
                     // Envoi du message sur le serveur secondaire
                     rconOptions = {
-                        host: "vanilla.antredesloutres.fr",
+                        host: "194.164.76.165",
                         port: 25574,
                         password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
                     };
@@ -189,7 +189,7 @@ module.exports = {
                 } else {
                     // Envoi du message sur le serveur primaire
                     rconOptions = {
-                        host: "vanilla.antredesloutres.fr",
+                        host: "194.164.76.165",
                         port: 25575,
                         password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
                     };
@@ -204,13 +204,14 @@ module.exports = {
                 }
                 
                 await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde
-                await rcon.send(`/tellraw @a {"text":"${playername} à rejoint le serveur \"${serveurname}\" !","color":"yellow"}`);
+                await rcon.send(`tellraw @a {"text":"${playername} a rejoint le serveur ${serveurname} !","color":"yellow"}`);
+                
             } catch (error) {
                 console.error(`[ERROR] Erreur lors de l'envoi du message sur le serveur opposé : ${error.message}`);
             }
         }
 
-        function sendPlayerLeaving(playername, serveur) {
+        async function sendPlayerLeaving(playername, serveur) {
             // Embed pour les messages de déconnexion des joueurs
             if (serveur === "primaire") {
                 const embed = new EmbedBuilder()
@@ -232,6 +233,42 @@ module.exports = {
                 })
                 .setTimestamp();
                 channel.send({ embeds: [embed] });
+            }
+
+            // Envoi du message sur le serveur où le joueur n'est pas
+            let rconOptions;
+            let serveurname;
+            try {
+                if (serveur === "primaire") {
+                    // Envoi du message sur le serveur secondaire
+                    rconOptions = {
+                        host: "194.164.76.165",
+                        port: 25574,
+                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
+                    };
+                    serveurname = servPrimaireConfigs.nom_serv;
+                } else {
+                    // Envoi du message sur le serveur primaire
+                    rconOptions = {
+                        host: "194.164.76.165",
+                        port: 25575,
+                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
+                    };
+                    serveurname = servSecondaireConfigs.nom_serv
+                }
+
+                try {
+                    rcon = await Rcon.connect(rconOptions);
+                } catch (error) {
+                    console.error('[ERROR] Erreur lors de la connexion au RCON du serveur opposé : ', error.message);
+                    return;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde
+                await rcon.send(`tellraw @a {"text":"${playername} a quitté le serveur ${serveurname} !","color":"yellow"}`);
+                
+            } catch (error) {
+                console.error(`[ERROR] Erreur lors de l'envoi du message sur le serveur opposé : ${error.message}`);
             }
         }
 
