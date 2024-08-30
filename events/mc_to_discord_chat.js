@@ -28,21 +28,9 @@ module.exports = {
             const channel = client.channels.cache.get(channelId);
             const channelLogs = client.channels.cache.get(channelIDLogs);
 
-            function isPlayerMessage(message) {
-                // Regex pour vérifier le format "<NomDuJoueur> texte"
-                const regex = /^<[^>]+> .+$/;
-                return regex.test(message);
-            }
-
-            function isPlayerJoiningOrLeaving(message) {
-                // Regex pour vérifier le format "NomDuJoueur joined/left the game"
-                const regex = /^[^ ]+ (joined|left) the game$/;
-                return regex.test(message);
-            }
-
-            function getPlayerName(message) {
-                // Regex pour capturer le nom du joueur et le texte
-                const regex = /^<([^>]+)> .+$/;
+            function getPlayerMessage(message) {
+                // Regex pour capturer le texte du message
+                const regex = /^<[^>]+> (.+)$/;
                 const match = message.match(regex);
                 
                 if (match) {
@@ -53,9 +41,54 @@ module.exports = {
                 }
             }
 
-            function getPlayerMessage(message) {
-                // Regex pour capturer le texte du message
-                const regex = /^<[^>]+> (.+)$/;
+            function isPlayerMessage(message) {
+                // Regex pour vérifier le format "<NomDuJoueur> texte"
+                const regex = /^<[^>]+> .+$/;
+                return regex.test(message);
+            }
+
+            function isPlayerJoining(message) {
+                // Regex pour vérifier le format "NomDuJoueur joined the game"
+                const regex = /^.+ joined the game$/;
+                if (regex.test(message)) {
+                    // Renvoi le nom du joueur
+                    const regex = /^([^ ]+) joined the game$/;
+                    const match = message.match(regex);
+                    return match[1];
+                } else {
+                    return null;
+                }
+            }
+
+            function isPlayerLeaving(message) {
+                // Regex pour vérifier le format "NomDuJoueur left the game"
+                const regex = /^.+ left the game$/;
+                if (regex.test(message)) {
+                    // Renvoi le nom du joueur
+                    const regex = /^([^ ]+) left the game$/;
+                    const match = message.match(regex);
+                    return match[1];
+                } else {
+                    return null;
+                }
+            }
+
+            function isServerStarting(message) {
+                // Regex pour vérifier le format "Done (.*?)(!)"
+                const regex = /^Done \(.*?\)!.*$/;
+                return regex.test(message);
+            }
+
+            function isServerStopping(message) {
+                // Regex pour vérifier le format "Stopping server"
+                const regex = /^Stopping server$/;
+                return regex.test(message);
+            }
+                
+
+            function getPlayerName(message) {
+                // Regex pour capturer le nom du joueur et le texte
+                const regex = /^<([^>]+)> .+$/;
                 const match = message.match(regex);
                 
                 if (match) {
@@ -79,10 +112,6 @@ module.exports = {
                         if (isPlayerMessage(cut_line)) {
                             // Embed pour les messages des joueurs
                             const embed = new EmbedBuilder()
-                            // .setAuthor({
-                                // name: "Message de joueur",
-                                // url: "https://antredesloutres.fr/",
-                            // })
                             .setTitle(getPlayerName(cut_line))
                             .setURL("https://fr.namemc.com/profile/" + getPlayerName(cut_line))
                             .setDescription(getPlayerMessage(cut_line))
@@ -95,8 +124,56 @@ module.exports = {
                             .setTimestamp();
 
                             await channel.send({ embeds: [embed] });
-                        } else if (isPlayerJoiningOrLeaving(cut_line)) {
-                            await channel.send(cut_line);
+                        } else if (isPlayerJoining(cut_line) !== null) {
+                            // Embed pour les messages de connexion des joueurs
+                            const embed = new EmbedBuilder()
+                                .setTitle("Connexion d'un joueur : " + isPlayerJoining(cut_line))
+                                .setColor("#00b0f4")
+                                .setFooter({
+                                    text: "Message venant du serveur minecraft Vanilla !",
+                                    iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
+                                })
+                                .setTimestamp();
+                    
+                            await channel.send({ embeds: [embed] });
+                        } else if (isPlayerLeaving(cut_line) !== null) {
+                            // Embed pour les messages de déconnexion des joueurs
+                            const embed = new EmbedBuilder()
+                                .setTitle("Déconnexion d'un joueur : " + isPlayerLeaving(cut_line))
+                                .setColor("#00b0f4")
+                                .setFooter({
+                                    text: "Message venant du serveur minecraft Vanilla !",
+                                    iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
+                                })
+                                .setTimestamp();
+                    
+                            await channel.send({ embeds: [embed] });
+                        } else if (isServerStarting(cut_line)) {
+                            // Embed pour les messages de démarrage du serveur
+                            const embed = new EmbedBuilder()
+                                .setTitle("Démarrage du serveur")
+                                .setDescription("Le serveur est prêt à accueillir des joueurs 🎉")
+                                .setColor("#00b0f4")
+                                .setFooter({
+                                    text: "Message venant du serveur minecraft Vanilla !",
+                                    iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
+                                })
+                                .setTimestamp();
+                    
+                            await channel.send({ embeds: [embed] });
+                        } else if (isServerStopping(cut_line)) {
+                            // Embed pour les messages d'arrêt du serveur
+                            const embed = new EmbedBuilder()
+                                .setTitle("Arrêt du serveur")
+                                .setDescription("Le serveur est en train de s'arrêter... Probablement pour pas longtemps !")
+                                .setColor("#00b0f4")
+                                .setFooter({
+                                    text: "Message venant du serveur minecraft Vanilla !",
+                                    iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
+                                })
+                                .setTimestamp();
+                    
+                            await channel.send({ embeds: [embed] });
                         }
                     } catch (error) {
                         console.error(`[ERROR] Erreur lors de l'envoi du message au salon "discu-mc" : ${error.message}`);
