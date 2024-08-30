@@ -6,6 +6,11 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     async execute(client) {
+
+        // Réquete vers l'API de l'Antre des Loutres pour récupérer les informations des serveurs
+        const apiData = await fetch('https://api.antredesloutres.fr/serveurs/primaire/actif');
+        const servPrimaireConfigs = await apiData.json();
+
         let logFile = '/home/serveurs/minecraft/vanilla/logs/latest.log';
         
         // A changer l'utilisation des id par des noms de salons
@@ -116,7 +121,7 @@ module.exports = {
                             .setURL("https://fr.namemc.com/profile/" + getPlayerName(cut_line))
                             .setDescription(getPlayerMessage(cut_line))
                             .setThumbnail("https://mc-heads.net/avatar/" + getPlayerName(cut_line) + "/50")
-                            .setColor("#00b0f4")
+                            .setColor(servPrimaireConfigs.embedColor)
                             .setFooter({
                                 text: "Message venant du serveur minecraft Vanilla !",
                                 iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
@@ -128,7 +133,7 @@ module.exports = {
                             // Embed pour les messages de connexion des joueurs
                             const embed = new EmbedBuilder()
                                 .setTitle("Connexion d'un joueur : " + isPlayerJoining(cut_line))
-                                .setColor("#00b0f4")
+                                .setColor(servPrimaireConfigs.embedColor)
                                 .setFooter({
                                     text: "Message venant du serveur minecraft Vanilla !",
                                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
@@ -140,7 +145,7 @@ module.exports = {
                             // Embed pour les messages de déconnexion des joueurs
                             const embed = new EmbedBuilder()
                                 .setTitle("Déconnexion d'un joueur : " + isPlayerLeaving(cut_line))
-                                .setColor("#00b0f4")
+                                .setColor(servPrimaireConfigs.embedColor)
                                 .setFooter({
                                     text: "Message venant du serveur minecraft Vanilla !",
                                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
@@ -153,7 +158,7 @@ module.exports = {
                             const embed = new EmbedBuilder()
                                 .setTitle("Démarrage du serveur")
                                 .setDescription("Le serveur est prêt à accueillir des joueurs 🎉")
-                                .setColor("#00b0f4")
+                                .setColor(servPrimaireConfigs.embedColor)
                                 .setFooter({
                                     text: "Message venant du serveur minecraft Vanilla !",
                                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
@@ -166,7 +171,7 @@ module.exports = {
                             const embed = new EmbedBuilder()
                                 .setTitle("Arrêt du serveur")
                                 .setDescription("Le serveur est en train de s'arrêter... Probablement pour pas longtemps !")
-                                .setColor("#00b0f4")
+                                .setColor(servPrimaireConfigs.embedColor)
                                 .setFooter({
                                     text: "Message venant du serveur minecraft Vanilla !",
                                     iconURL: "https://cdn.discordapp.com/app-icons/1247285437425516647/d9859c21466ea0cc1a164d03926ea7bb.png?size=32",
