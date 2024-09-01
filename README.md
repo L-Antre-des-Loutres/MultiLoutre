@@ -28,7 +28,8 @@ Un site internet est également en cours de développement. Cependant, au moment
 
 ## Contributions
 
-[...]
+[Corentin COTTEREAU](https://github.com/Corentin-cott)
+[Mathéo PERODEAU](https://github.com/matheo-1712)
 
 ## License
 
