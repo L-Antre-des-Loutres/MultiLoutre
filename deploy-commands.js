@@ -17,8 +17,9 @@ for (const folder of commandFolders) {
 		const command = require(filePath);
 		if ('data' in command && 'execute' in command) {
 			commands.push(command.data.toJSON());
+			console.log('[INFO] Commande', '\x1b[33m', `${command.data.name}`, '\x1b[0m', 'chargée avec succès.');
 		} else {
-			console.log(`[AVERTISSEMENT] La commande à ${filePath} manque une propriété "data" ou "execute" requise.`);
+			console.warn('[WARN] La commande', '\x1b[33m', `${file}`, '\x1b[0m', 'ne contient pas de données ou de fonction d\'exécution.');
 		}
 	}
 }

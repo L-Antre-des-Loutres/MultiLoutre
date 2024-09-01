@@ -1,4 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
+const { RconPassword, ServIPPrimaire, ServRconPortPrimaire, ServIPSecondaire, ServRconPortSecondaire, channelMcDiscordID, channelMcMyAdminPrimaryID, channelMcMyAdminSecondaryID } = require('../config.json');
 const { Rcon } = require('rcon-client');
 const { Tail } = require('tail');
 const fs = require('fs');
@@ -7,6 +8,18 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     async execute(client) {
+        // Options de connexion RCON
+        const rconOptionsPrimaire = {
+            host: ServIPPrimaire,
+            port: ServRconPortPrimaire,
+            password: RconPassword,
+        };
+        const rconOptionsSecondaire = {
+            host: ServIPSecondaire,
+            port: ServRconPortSecondaire,
+            password: RconPassword,
+        };
+
         // Function pour les regex des messages des logs ----------------------------------------------
         function getPlayerMessage(message) {
             // Regex pour capturer le texte du message
@@ -65,7 +78,6 @@ module.exports = {
             return regex.test(message);
         }
             
-
         function getPlayerName(message) {
             // Regex pour capturer le nom du joueur et le texte
             const regex = /^<([^>]+)> .+$/;
@@ -116,20 +128,12 @@ module.exports = {
                 let embedColor;
                 if (serveur === "primaire") {
                     // Envoi du message sur le serveur secondaire
-                    rconOptions = {
-                        host: "194.164.76.165",
-                        port: 25574,
-                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
-                    };
                     embedColor = servPrimaireConfigs.embedColor;
+                    rconOptions = rconOptionsSecondaire;
                 } else {
                     // Envoi du message sur le serveur primaire
-                    rconOptions = {
-                        host: "194.164.76.165",
-                        port: 25575,
-                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
-                    };
                     embedColor = servSecondaireConfigs.embedColor
+                    rconOptions = rconOptionsPrimaire;
                 }
 
                 try {
@@ -180,20 +184,12 @@ module.exports = {
             try {
                 if (serveur === "primaire") {
                     // Envoi du message sur le serveur secondaire
-                    rconOptions = {
-                        host: "194.164.76.165",
-                        port: 25574,
-                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
-                    };
                     serveurname = servPrimaireConfigs.nom_serv;
+                    rconOptions = rconOptionsSecondaire;
                 } else {
                     // Envoi du message sur le serveur primaire
-                    rconOptions = {
-                        host: "194.164.76.165",
-                        port: 25575,
-                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
-                    };
                     serveurname = servSecondaireConfigs.nom_serv
+                    rconOptions = rconOptionsPrimaire;
                 }
 
                 try {
@@ -241,20 +237,12 @@ module.exports = {
             try {
                 if (serveur === "primaire") {
                     // Envoi du message sur le serveur secondaire
-                    rconOptions = {
-                        host: "194.164.76.165",
-                        port: 25574,
-                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
-                    };
                     serveurname = servPrimaireConfigs.nom_serv;
+                    rconOptions = rconOptionsSecondaire;
                 } else {
                     // Envoi du message sur le serveur primaire
-                    rconOptions = {
-                        host: "194.164.76.165",
-                        port: 25575,
-                        password: "j4SPyLD0J6or9dbSLJqfT70X9sPt0MOGV5RmSkGK",
-                    };
                     serveurname = servSecondaireConfigs.nom_serv
+                    rconOptions = rconOptionsPrimaire;
                 }
 
                 try {
@@ -337,17 +325,13 @@ module.exports = {
         apiData = await fetch('https://api.antredesloutres.fr/serveurs/secondaire/actif');
         const servSecondaireConfigs = await apiData.json();
         
-        let logFilePrimaire = servPrimaireConfigs.path_serv + '/logs/latest.log';
-        let logFileSecondaire = servSecondaireConfigs.path_serv + '/logs/latest.log';
-        
-        // A changer l'utilisation des id par des noms de salons
-        const channelId = '1159113861593579612'; // ID du salon dans lequel envoyer juste les messages du chat (🌌・discu-mc)
-        const channelIDLogsPrimaire = '1258841065746731019'; // ID du salon dans lequel envoyer TOUT les logs du serveur primaire (🍔mcmyadmin-primaire)
-        const channelIDLogsSecondaire = '1258841067839815780'; // ID du salon dans lequel envoyer TOUT les logs du serveur secondaire (🍔mcmyadmin-secondaire)
+        let logFilePrimaire = servPrimaireConfigs.path_serv + 'logs/latest.log';
+        let logFileSecondaire = servSecondaireConfigs.path_serv + 'logs/latest.log';
 
-        const channel = client.channels.cache.get(channelId);
-        const channelLogsPrimaire = client.channels.cache.get(channelIDLogsPrimaire);
-        const channelLogsSecondaire = client.channels.cache.get(channelIDLogsSecondaire);
+        // Récupération des ID des salons
+        const channel = client.channels.cache.get(channelMcDiscordID);
+        const channelLogsPrimaire = client.channels.cache.get(channelMcMyAdminPrimaryID);
+        const channelLogsSecondaire = client.channels.cache.get(channelMcMyAdminSecondaryID);
 
         
         // Vérifiez si le fichier de log pour le serveur primaire existe
@@ -355,7 +339,7 @@ module.exports = {
             console.error(`[ERROR] Le fichier de log n'existe pas : ${logFilePrimaire}`);
             return;
         } else {
-            console.log(`[INFO] Démarrage de la surveillance des logs du serveur primaire : ${logFilePrimaire}`);
+            console.log('[INFO] Démarrage de la surveillance des logs du serveur primaire :', '\x1b[33m', `${logFilePrimaire}`, '\x1b[0m');
             
             // Tail du fichier primaire
             const tail = new Tail(logFilePrimaire);
@@ -366,7 +350,7 @@ module.exports = {
                     try {
                         await channelLogsPrimaire.send(line);
                     } catch (error) {
-                        console.error(`[ERROR] Erreur lors de l'envoi du message au salon "mcmyadmin-primaire" : ${error.message}`);
+                        console.error('[ERROR] Erreur lors de l\'envoi du message au salon', '\x1b[34m', 'mcmyadmin-primaire', '\x1b[0m', ': ${error.message}');
                     }
     
                     if (channel) {
@@ -389,13 +373,13 @@ module.exports = {
     
                             }
                         } catch (error) {
-                            console.error(`[ERROR] Erreur lors de l'envoi du message au salon "discu-mc (serveur : primaire)" : ${error.message}`);
+                            console.error('[ERROR] Erreur lors de l\'envoi du message au salon', '\x1b[34m', 'discu-mc', '\x1b[0m', '(serveur : primaire) : ${error.message}');
                         }
                     } else {
-                        console.error('[ERROR] Salon "discu-mc" non trouvé (serveur : primaire)');
+                        console.error('[ERROR] Salon', '\x1b[34m', 'discu-mc', '\x1b[0m', 'non trouvé (serveur : primaire)');
                     }
                 } else {
-                    console.error('[ERROR] Salon "mcmyadmin-primaire" non trouvé');
+                    console.error('[ERROR] Salon', '\x1b[34m', 'mcmyadmin-primaire', '\x1b[0m', 'non trouvé');
                 }
             });
         }
@@ -404,7 +388,7 @@ module.exports = {
             console.error(`[ERROR] Le fichier de log n'existe pas : ${logFileSecondaire}`);
             return;
         } else {
-            console.log(`[INFO] Démarrage de la surveillance des logs du serveur secondaire : ${logFileSecondaire}`);
+            console.log('[INFO] Démarrage de la surveillance des logs du serveur secondaire :', '\x1b[33m', `${logFileSecondaire}`, '\x1b[0m');
             // Tail du fichier secondaire
             const tailSecondaire = new Tail(logFileSecondaire);
             tailSecondaire.on('line', async (line) => {
@@ -414,7 +398,7 @@ module.exports = {
                     try {
                         await channelLogsSecondaire.send(line);
                     } catch (error) {
-                        console.error(`[ERROR] Erreur lors de l'envoi du message au salon "mcmyadmin-secondaire" : ${error.message}`);
+                        console.error('[ERROR] Erreur lors de l\'envoi du message au salon', '\x1b[34m', 'mcmyadmin-secondaire', '\x1b[0m', ': ${error.message}');
                     }
     
                     if (channel) {
@@ -437,13 +421,13 @@ module.exports = {
     
                             }
                         } catch (error) {
-                            console.error(`[ERROR] Erreur lors de l'envoi du message au salon "discu-mc (serveur : secondaire)" : ${error.message}`);
+                            console.error('[ERROR] Erreur lors de l\'envoi du message au salon', '\x1b[34m', 'discu-mc', '\x1b[0m', '(serveur : secondaire) : ${error.message}');
                         }
                     } else {
-                        console.error('[ERROR] Salon "discu-mc" non trouvé (serveur : secondaire)');
+                        console.error('[ERROR] Salon', '\x1b[34m', 'discu-mc', '\x1b[0m', 'non trouvé (serveur : secondaire)');
                     }
                 } else {
-                    console.error('[ERROR] Salon "mcmyadmin-secondaire" non trouvé');
+                    console.error('[ERROR] Salon', '\x1b[34m', 'mcmyadmin-secondaire', '\x1b[0m', 'non trouvé');
                 }
             });
         }
