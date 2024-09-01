@@ -30,8 +30,9 @@ for (const folder of commandFolders) {
 		// Ajouter les commandes à la collection
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
+			console.log('[INFO] Commande', '\x1b[33m', `${file}`, '\x1b[0m', 'chargée avec succès.');
 		} else {
-			console.log(`[AVERTISSEMENT] La commande à ${filePath} manque une propriété "data" ou "execute" requise.`);
+			console.warn('[WARN] La commande', '\x1b[33m', `${file}`, '\x1b[0m', 'ne contient pas de données ou de fonction d\'exécution.');
 		}
 	}
 }
@@ -44,7 +45,7 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
-	console.log(`[INFO] Chargement de l'événement : ${event.name}`);
+	console.log('[INFO] Événement', '\x1b[33m', `${file}`, '\x1b[0m', 'chargé avec succès.');
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
 	} else {
