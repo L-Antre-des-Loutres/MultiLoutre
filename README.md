@@ -1,6 +1,6 @@
 # Mineotter
 
-[...]
+![mineotter-logo](https://github.com/Corentin-cott/mineotter-bot/blob/main/imgs/logo.png)
 
 ## Table of Contents
 
