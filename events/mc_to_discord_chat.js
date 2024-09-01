@@ -342,9 +342,13 @@ module.exports = {
         
         // A changer l'utilisation des id par des noms de salons
         const channelId = '1159113861593579612'; // ID du salon dans lequel envoyer juste les messages du chat (🌌・discu-mc)
-        const channelIDLogs = '1258841065746731019'; // ID du salon dans lequel envoyer TOUT les logs (🍔mcmyadmin-primaire)
+        const channelIDLogsPrimaire = '1258841065746731019'; // ID du salon dans lequel envoyer TOUT les logs du serveur primaire (🍔mcmyadmin-primaire)
+        const channelIDLogsSecondaire = '1258841067839815780'; // ID du salon dans lequel envoyer TOUT les logs du serveur secondaire (🍔mcmyadmin-secondaire)
+
         const channel = client.channels.cache.get(channelId);
-        const channelLogs = client.channels.cache.get(channelIDLogs);
+        const channelLogsPrimaire = client.channels.cache.get(channelIDLogsPrimaire);
+        const channelLogsSecondaire = client.channels.cache.get(channelIDLogsSecondaire);
+
         
         // Vérifiez si le fichier de log pour le serveur primaire existe
         if (!fs.existsSync(logFilePrimaire)) {
@@ -358,9 +362,9 @@ module.exports = {
             tail.on('line', async (line) => {
                 if (line.trim() === '') return; // Ignorer les lignes vides
     
-                if (channelLogs) {
+                if (channelLogsPrimaire) {
                     try {
-                        await channelLogs.send(line);
+                        await channelLogsPrimaire.send(line);
                     } catch (error) {
                         console.error(`[ERROR] Erreur lors de l'envoi du message au salon "mcmyadmin-primaire" : ${error.message}`);
                     }
@@ -406,9 +410,9 @@ module.exports = {
             tailSecondaire.on('line', async (line) => {
                 if (line.trim() === '') return; // Ignorer les lignes vides
     
-                if (channelLogs) {
+                if (channelLogsSecondaire) {
                     try {
-                        await channelLogs.send(line);
+                        await channelLogsSecondaire.send(line);
                     } catch (error) {
                         console.error(`[ERROR] Erreur lors de l'envoi du message au salon "mcmyadmin-secondaire" : ${error.message}`);
                     }
