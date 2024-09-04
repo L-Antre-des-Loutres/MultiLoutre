@@ -18,9 +18,9 @@ module.exports = {
             } catch (error) {
                 console.error(`[ERROR] Une erreur est survenue lors de l'exécution de la commande ${interaction.commandName} : `, error);
                 if (interaction.replied || interaction.deferred) {
-                    await interaction.followUp({ content: 'Une erreur est survenue lors de l\'exécution de cette commande ! Mince alors ! 🥸', ephemeral: true });
+                    await interaction.followUp({ content: 'Une erreur est survenue lors de l\'exécution de cette commande ! Mince alors ! 🥸\n```' + error + '```', ephemeral: true });
                 } else {
-                    await interaction.reply({ content: 'Il y a eu une erreur lors de l\'exécution de cette commande ! Mince alors ! 🥸', ephemeral: true });
+                    await interaction.reply({ content: 'Il y a eu une erreur lors de l\'exécution de cette commande ! Mince alors ! 🥸\n```' + error + '```', ephemeral: true });
                 }
             }
         } else if (interaction.isAutocomplete()) {
