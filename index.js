@@ -17,6 +17,25 @@ const client = new Client({
 client.commands = new Collection();
 client.cooldowns = new Collection();
 
+// Remplir config.json avec les informations nécessaires si celui n'a que {}
+if (fs.readFileSync('./config.json').toString() === '{}') {
+	console.warn('[WARN] Fichier de configuration vide ou inexistant. Remplissage du fichier avec les informations de base (token, token_api, ServIPPrimaire, ServIPSecondaire, ServPortPrimaire, ServPortSecondaire, ServRconPortPrimaire, ServRconPortSecondaire, RconPassword, rconPrimaireActif, rcconSecondaireActif et maxServeurParUtilisateur).');
+	fs.writeFileSync('./config.json', JSON.stringify({
+		"token": "YOUR_DISCORD_BOT_TOKEN",
+		"token_api": "YOUR_API_TOKEN",
+		"ServIPPrimaire": "YOUR_PRIMARY_SERVER_IP",
+		"ServIPSecondaire": "YOUR_SECONDARY_SERVER_IP",
+		"ServPortPrimaire": "YOUR_PRIMARY_SERVER_PORT",
+		"ServPortSecondaire": "YOUR_SECONDARY_SERVER_PORT",
+		"ServRconPortPrimaire": "YOUR_PRIMARY_SERVER_RCON_PORT",
+		"ServRconPortSecondaire": "YOUR_SECONDARY_SERVER_RCON_PORT",
+		"RconPassword": "YOUR_RCON_PASSWORD",
+		"rconPrimaireActif": true,
+		"rconSecondaireActif": true,
+		"maxServeurParUtilisateur": 1
+	}, null, 4));
+}
+
 // Récupérer les commandes
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
