@@ -84,8 +84,9 @@ module.exports = {
         
             // Vérifier si l'utilisateur a atteint le nombre maximum de serveurs.
             if (userServers && userServers.length >= maxServeurParUtilisateur) {
-                console.warn('[WARN] L\'utilisateur a déjà atteint le nombre maximum de serveurs. Annulation de la création du serveur.');
-                return await interaction.reply({ content: 'Vous avez déjà atteint le nombre maximum de serveurs que vous pouvez posséder en même temps, qui est de ' + maxServeurParUtilisateur + ' 🥸', ephemeral: true });
+                console.warn('[WARN] L\'utilisateur a déjà atteint le nombre maximum de serveurs. Lancement de l\'event "too_much_servers"');
+                serverManagmentEvent.too_much_servers(interaction.client, interaction, interaction.channel.id, interaction.user.id);
+                return // await interaction.channel.send({ content: 'Vous avez déjà atteint le nombre maximum de serveurs que vous pouvez posséder en même temps, qui est de ' + maxServeurParUtilisateur + ' 🥸'});
             }
         } catch (error) {
             console.error('[ERROR] ' + error);
@@ -120,7 +121,7 @@ module.exports = {
         }
 
         // Maintenant on ajoute le serveur à la liste des serveurs de l'utilisateur. On vérifie aussi si le nom du serveur n'est pas déjà utilisé.
-        const path_serv = "/home/serveurs/minecraft/serveurs-investisseurs/" + interaction.user.id + "/" + nom_serv;
+        const path_serv = "/home/serveurs/minecraft/serveurs-investisseurs/" + interaction.user.id + "/" + nom_serv + "/";
         let id_serv; // On déclare la variable id_serv pour récupérer l'id du serveur quand on l'aura ajouté
         try {
             response = await fetch('https://api.antredesloutres.fr/serveurs/');
@@ -161,7 +162,7 @@ module.exports = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ client_token: token_api, id_discord: interaction.user.id, id_serv: id_serv })
             };
-            response = await fetch('https://api.antredesloutres.fr/investisseurs/addServeur', requestOptions);
+            response = await fetch('https://api.antredesloutres.fr/investisseurs/serveur/addServeur', requestOptions);
             data = await response.json();
             console.log('[INFO] Liste des serveurs de l\'utilisateur mise à jour :', data);
 
@@ -203,7 +204,7 @@ module.exports = {
 
         // On lance l'évènement ../events/serverCreate.js et on envoi un message récapitulatif dans le salon créé
         try {
-            serverManagmentEvent.install_server(interaction.client, interaction, id_serv, nom_serv, version_serv, nom_modpack, url_modpack, url_installateur, code_couleur, channel.id, interaction.user.id);
+            serverManagmentEvent.install_server(interaction.client, id_serv, nom_serv, version_serv, nom_modpack, url_modpack, url_installateur, code_couleur, channel.id, interaction.user.id);
         } catch (error) {
             console.error('[ERROR] Erreur lors du lancement de l\'event "serverCreate.js" : ' + error);
         }
