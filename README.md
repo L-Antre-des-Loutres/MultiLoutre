@@ -20,7 +20,25 @@ Un site internet est également en cours de développement. Cependant, au moment
 
 ## Fonctionnalités
 
-[...]
+Commandes :
+> [!TIP]
+> Commandes pour les simples utilisateurs
+- /serveurs [action] [serveur]
+- /check-serveurs
+- /liste-serveurs
+- /créer-serveur
+- /enregistrement [pseudonyme]
+- /recup-identifiants [service]
+- /git-depo
+- /ping
+> [!TIP]
+> Commandes pour les administrateurs
+- /edit-serveur [élément] [modification]
+- /rcon [commande]
+- /mineotter-disable [commande|fonctionnalité]
+
+Events :
+- 
 
 ## Fonctionnement
 
