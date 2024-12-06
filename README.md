@@ -19,6 +19,7 @@ Nous proposons également des services en hébergeant et en administrant nous-m�
 Un site internet est également en cours de développement. Cependant, au moment où j'écris ceci, c'est encore un secret 🤫
 
 ## Fonctionnalités
+**Présentes et à venir*
 
 Commandes :
 > [!TIP]
