@@ -18,8 +18,7 @@ Nous proposons également des services en hébergeant et en administrant nous-m�
 
 Un site internet est également en cours de développement. Cependant, au moment où j'écris ceci, c'est encore un secret 🤫
 
-## Fonctionnalités
-**Présentes et à venir*
+## Fonctionnalités présentes & à venir
 
 Commandes :
 > [!TIP]
@@ -50,7 +49,3 @@ Events :
 [Corentin COTTEREAU](https://github.com/Corentin-cott) : Concepteur de Mineotter
 
 [Mathéo PERODEAU](https://github.com/matheo-1712) : Concepteur de l'API ADLoutres
-
-## License
-
-[...]
