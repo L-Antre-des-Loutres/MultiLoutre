@@ -30,7 +30,6 @@ Commandes :
 - /enregistrement **[pseudonyme]**
 - /recup-identifiants **[service]**
 - /git-depo
-- /ping
 > [!TIP]
 > Commandes pour les administrateurs
 - /edit-serveur **[élément] [modification]**
