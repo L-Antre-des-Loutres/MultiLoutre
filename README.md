@@ -41,7 +41,9 @@ Events :
 
 ## Fonctionnement
 
-[...]
+La base de données "serveurs" que Mineotter utilise :
+
+![serveur_database](https://cdn.discordapp.com/attachments/1255156784134492170/1324438867624984627/serveurs.png?ex=67782750&is=6776d5d0&hm=675e176b283b5c5e09f2895d847d6a120dfc608cd3c224fce9fd42468bab8e38&)
 
 ## Contributions
 
