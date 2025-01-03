@@ -1,9 +1,14 @@
 const {Client, Collection, GatewayIntentBits, Events} = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const {log_s, log_i, log_w, log_e, important_c, reset_c, error_c} = require('./color_code.json');
+
+if (!fs.existsSync(__dirname + 'config.json')) {
+  console.error(log_e + `Le fichier "${important_c}config.json${reset_c}" n'existe pas. Veuillez le créer en lançant le script ${important_c}./scripts/deploy-config.js${reset_c}.`);
+  process.exit(1);
+}
 
 const {bot_token} = require('./config.json');
-const {log_s, log_i, log_w, log_e, important_c, reset_c, error_c} = require('./color_code.json');
 
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]});
 

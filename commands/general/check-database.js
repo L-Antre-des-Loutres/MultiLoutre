@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { dbIntegrityCheck } = require('../../utils/dbIntegrityCheck');
+const { dbServeursIntegrityCheck } = require('../../utils/dbServeursIntegrityCheck');
 const { bot_color } = require('../../config.json');
 const { log_i, log_s, log_e, error_c, reset_c, important_c } = require('../../color_code.json');
 
@@ -12,8 +12,8 @@ module.exports = {
     try {
       await interaction.reply('Vérification de l\'intégrité de la base de données en cours...');
       
-      // Appelle la fonction de vérification de l'utilitaire dbIntegrityCheck
-      const results = await dbIntegrityCheck();
+      // Appelle la fonction de vérification de l'utilitaire dbServeursIntegrityCheck
+      const results = await dbServeursIntegrityCheck();
       console.log(log_i + `Résultats de la vérification : ${important_c}${JSON.stringify(results)}${reset_c}`);
 
       const connection = results.find(r => r.connection)?.connection || "🟡 Non disponible";
