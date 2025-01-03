@@ -9,7 +9,8 @@ const defaultConfig = {
     db_host: "localhost",
     db_user: "mineotter",
     db_password: "placeholder",
-    db_name: "serveurs"
+    db_name: "serveurs_informations",
+    db_name: "api_serv_parameters"
 };
 
 const configPath = __dirname + '/../config.json';

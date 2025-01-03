@@ -1,5 +1,5 @@
 const mysql = require('mysql2');
-const { db_host, db_user, db_password, db_name } = require('../config.json');
+const { db_host, db_user, db_password, serv_db_name } = require('../config.json');
 const { log_i, log_s, log_e, error_c, reset_c } = require('../color_code.json');
 
 // Création de la connexion à MySQL
@@ -32,16 +32,16 @@ connection.connect((err) => {
   console.log(log_s + 'Connexion à MySQL réussie.');
 
   // Vérification si la base de données existe
-  connection.query(`CREATE DATABASE IF NOT EXISTS ${db_name};`, (err, result) => {
+  connection.query(`CREATE DATABASE IF NOT EXISTS ${serv_db_name};`, (err, result) => {
     if (err) {
       console.log(log_e + 'Erreur lors de la création de la base de données : "', error_c + err + reset_c + '"');
       connection.end();
       return;
     }
-    console.log(log_s + `Base de données ${db_name} créée ou déjà existante.`);
+    console.log(log_s + `Base de données ${serv_db_name} créée ou déjà existante.`);
 
     // Sélectionner la base de données et créer les tables
-    connection.changeUser({ database: db_name }, async (err) => {
+    connection.changeUser({ database: serv_db_name }, async (err) => {
       if (err) {
         console.log(log_e + 'Erreur lors du changement de base de données : "', error_c + err + reset_c + '"');
         connection.end();

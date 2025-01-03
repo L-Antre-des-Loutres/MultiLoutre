@@ -1,5 +1,5 @@
 const mysql = require('mysql2/promise'); // Utilisation du wrapper promise
-const { db_host, db_user, db_password, db_name } = require('../config.json');
+const { db_host, db_user, db_password, serv_db_name } = require('../config.json');
 const { log_i, log_s, log_e, important_c, error_c, reset_c } = require('../color_code.json');
 
 async function dbIntegrityCheck() {
@@ -15,7 +15,7 @@ async function dbIntegrityCheck() {
       host: db_host,
       user: db_user,
       password: db_password,
-      database: db_name,
+      database: serv_db_name,
     });
     console.log(log_s + 'Connexion réussie.');
     utils_results.push({ connection: '🟢 Connexion réussie' });
@@ -75,7 +75,7 @@ async function checkForeignKeyConstraints(connection, utils_results) {
     FROM information_schema.KEY_COLUMN_USAGE
     WHERE TABLE_SCHEMA = ?;
   `;
-  const [results] = await connection.query(query, [db_name]);
+  const [results] = await connection.query(query, [serv_db_name]);
 
   if (results.length > 0) {
     console.log(log_s + 'Vérification des clés étrangères terminée.' + reset_c);
