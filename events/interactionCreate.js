@@ -8,7 +8,7 @@ module.exports = {
 
     const command = client.commands.get(interaction.commandName);
     if (!command) {
-      console.error(`Commande non trouvée : ${interaction.commandName}`);
+      console.log(log_w + 'Commande inconnue : "', important_c + interaction.commandName + reset_c + '"');
       return;
     }
 
