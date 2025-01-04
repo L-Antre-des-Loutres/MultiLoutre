@@ -43,7 +43,9 @@ console.log(log_i + 'Commandes prêtes pour enregistrement :', important_c + com
   try {
     await rest.put(Routes.applicationCommands(bot_id), {body: commands});
     console.log(log_s + 'Commandes enregistrées avec succès !');
+    process.exit(0);
   } catch (error) {
     console.error(log_e + 'Erreur lors de l\'enregistrement des commandes : "', error_c + error + reset_c + '"');
+    process.exit(1);
   }
 })();
