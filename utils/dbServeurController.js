@@ -86,6 +86,36 @@ function closeConnection() {
   });
 }
 
+// Récupère l'emoji du serveur : paramètre server = objet serveur
+function getServerEmoji(server) {
+  let serveur_emoji = '';
+  if (server.jeu !== 'Minecraft') {
+    serveur_emoji = "<:other_servers:1325467780602138736>";
+  } else {
+    if (server.modpack == 'Minecraft Vanilla') {
+      serveur_emoji = `<:mc_primaire:1325274691581120582>`;
+    } else {
+        serveur_emoji = `<:mc_secondaire:1325274670215200789>`;
+    }
+    return serveur_emoji;
+  }
+}
+
+// Récupère l'image du serveur : paramètre server = objet serveur
+function getServerImage(server) {
+  let serveur_image = '';
+  if (server.jeu !== 'Minecraft') {
+    serveur_image = 'https://raw.githubusercontent.com/Corentin-cott/Mineotter-Bot/refs/heads/v2.0.0/imgs/serv_bann/autre_bann.png';
+  } else {
+    if (server.modpack == 'Minecraft Vanilla') {
+      serveur_image = 'https://raw.githubusercontent.com/Corentin-cott/Mineotter-Bot/refs/heads/v2.0.0/imgs/serv_bann/primaire_bann.png';
+    } else {
+      serveur_image = 'https://raw.githubusercontent.com/Corentin-cott/Mineotter-Bot/refs/heads/v2.0.0/imgs/serv_bann/secondaire_bann.png';
+    }
+    return serveur_image;
+  }
+}
+
 // Récupère tous les serveurs : sans paramètre
 function getAllServers() {
   return new Promise((resolve, reject) => {
@@ -313,6 +343,8 @@ function linkServerToAdministrator(serverId, adminId) {
 module.exports = {
   connectToDB,
   closeConnection,
+  getServerEmoji,
+  getServerImage,
   getAllServers,
   getServerById,
   getAllActiveServers,

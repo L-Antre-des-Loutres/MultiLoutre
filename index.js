@@ -52,7 +52,7 @@ for (const file of eventFiles) {
   } else {
     client.on(event.name, (...args) => event.execute(...args, client));
   }
-  console.log(log_s + `Événement chargé : ${important_c}${event.name}${reset_c}`);
+  console.log(log_s + `Événement chargé : ${important_c}${file}${reset_c}`);
 }
 
 // Connexion du bot

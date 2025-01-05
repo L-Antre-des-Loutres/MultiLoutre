@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { bot_color } = require('../../config.json');
+const { bot_color } = require(__dirname + '/../../config.json');
+const { version } = require(__dirname + '/../../config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,7 +10,7 @@ module.exports = {
         const embed = new EmbedBuilder()
         .setTitle("Dépôt GitHub de Mineotter")
         .setURL("https://github.com/Corentin-cott/mineotter-bot")
-        .setDescription("Et voilà pour toi le lien de mon magnifique dépôt GitHub !")
+        .setDescription(`Et voilà pour toi le lien de mon magnifique dépôt GitHub !\nJe suis actuellement en version ${version}.`)
         .setImage("https://github.com/Corentin-cott/mineotter-bot/raw/main/imgs/logo.png")
         .setColor(bot_color)
         .setFooter({

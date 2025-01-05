@@ -26,12 +26,9 @@ module.exports = {
             let fields = [];
             if (servers.length > 0) {
                 servers.forEach(server => {
+                    let serveur_emoji = dbController.getServerEmoji(server);
+
                     let serveur_title = '';
-                    if (server.modpack == 'Minecraft Vanilla') {
-                        serveur_emoji = `<:mc_primaire:1325274691581120582>`;
-                    } else {
-                        serveur_emoji = `<:mc_secondaire:1325274670215200789>`;
-                    }
                     if (server.global) {
                         serveur_title = `${serveur_emoji} ${server.nom} (global)`;
                     } else {

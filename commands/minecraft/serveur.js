@@ -13,10 +13,18 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(
                     { name: 'Lancer', value: 'lancer' },
+                    { name: 'Check', value: 'check' },
                     { name: 'Informations', value: 'infos' }
                 )
         ),
     async execute(interaction) {
+        const action = interaction.options.getString('action');
+
+        // Pour l'action "check", pas besoin d'envoyer la liste des serveurs
+        if (action === 'check') {
+            return interaction.reply('Fonction check selectionnée');
+        }
+
         try {
             const servers = await dbController.getAllActiveMinecraftServers();
             if (!servers || servers.length === 0) {
@@ -32,7 +40,7 @@ module.exports = {
                 .setColor(bot_color);
 
             const selectMenu = new StringSelectMenuBuilder()
-                .setCustomId('select_server')
+                .setCustomId(`select_serveurs:${action}`)
                 .setPlaceholder('Choisissez un serveur Minecraft')
                 .addOptions(
                     servers.map(server => ({
