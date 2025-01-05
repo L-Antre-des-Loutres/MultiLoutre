@@ -5,7 +5,7 @@ const { log_i, log_s, log_e, error_c, reset_c, important_c } = require('../../co
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('check-database')
+    .setName('admin-check-database')
     .setDescription('Vérifie l\'intégrité de la base de données.'),
 
   async execute(interaction) {
