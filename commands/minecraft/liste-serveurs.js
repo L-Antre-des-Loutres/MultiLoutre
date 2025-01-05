@@ -22,11 +22,23 @@ module.exports = {
             const servers = await dbController.getAllActiveMinecraftServers();
 
             // Prépare la description et les champs de l'embed
-            let serverListDescription = 'Voici la liste de nos serveurs Minecraft actuellement disponibles :';
+            let serverListDescription = '[En savoir plus sur nos serveurs Minecraft](https://perdu.com).\nVoici la liste de nos serveurs Minecraft actuellement disponibles :';
             let fields = [];
             if (servers.length > 0) {
                 servers.forEach(server => {
-                    fields.push({name: server.nom, value: `**Jeu:** ${server.jeu} ${server.version}\n**Modpack:** [${server.modpack}](${server.modpack_url})`, inline: false});
+                    let serveur_title = '';
+                    if (server.modpack == 'Minecraft Vanilla') {
+                        serveur_emoji = `<:mc_primaire:1325274691581120582>`;
+                    } else {
+                        serveur_emoji = `<:mc_secondaire:1325274670215200789>`;
+                    }
+                    if (server.global) {
+                        serveur_title = `${serveur_emoji} ${server.nom} (global)`;
+                    } else {
+                        serveur_title = `${serveur_emoji} ${server.nom} (investisseur)`;
+                    }
+
+                    fields.push({name: serveur_title, value: `**Jeu:** ${server.jeu} ${server.version}\n**Modpack:** [${server.modpack}](${server.modpack_url})`, inline: false});
                 });
             } else {
                 serverListDescription = 'Aucun serveur disponible actuellement.';

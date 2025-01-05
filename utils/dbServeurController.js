@@ -1,6 +1,58 @@
 const mysql = require('mysql2');
 const fs = require('fs');
 
+/*
+Table serveurs {
+    id INT [pk, increment]
+    nom VARCHAR(255) [not null]
+    jeu VARCHAR(255) [not null]
+    version VARCHAR(50) [not null]
+    modpack VARCHAR(255) [not null]
+    modpack_url VARCHAR(255)
+    nom_monde VARCHAR(255) [not null]
+    embed_color VARCHAR(7) [not null]
+    path_serv TEXT [not null]
+    start_script VARCHAR(255) [not null]
+    actif BOOLEAN [default: false]
+    global BOOLEAN [default: true]
+}
+
+Table investisseurs {
+    id INT [pk, increment]
+    nom VARCHAR(255) [unique, not null]
+}
+
+Table administrateurs {
+    id INT [pk, increment]
+    nom VARCHAR(255) [unique, not null]
+}
+
+Table serveurs_investisseurs {
+    serveur_id INT [ref: > serveurs.id]
+    investisseur_id INT [ref: > investisseurs.id]
+
+    indexes {
+        (serveur_id, investisseur_id) [unique]
+    }
+}
+
+Table serveurs_administrateurs {
+    serveur_id INT [ref: > serveurs.id]
+    admin_id INT [ref: > administrateurs.id]
+
+    indexes {
+        (serveur_id, admin_id) [unique]
+    }
+}
+
+Table rcon_parameters {
+    id INT [pk, increment]
+    host_primaire VARCHAR(255) [not null]
+    host_secondaire VARCHAR(255) [not null]
+    rcon_password VARCHAR(255) [not null]
+}
+*/
+
 // Crée une connexion à la base de données
 const config = JSON.parse(fs.readFileSync(__dirname + '/../config.json'));
 const connection = mysql.createConnection({
@@ -42,6 +94,19 @@ function getAllServers() {
         reject(err);
       } else {
         resolve(results);
+      }
+    });
+  });
+}
+
+// Récupère un serveur par son ID : paramètre id = id du serveur
+function getServerById(id) {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM serveurs WHERE id = ?', [id], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results[0]); // Un seul résultat attendu
       }
     });
   });
@@ -93,7 +158,33 @@ function getServerById(id) {
       if (err) {
         reject(err);
       } else {
-        resolve(results[0]); // Since it is expected to return a single result
+        resolve(results[0]);
+      }
+    });
+  });
+}
+
+// Vérifie si un serveur est actif : paramètre id = id du serveur
+function isServerActive(id) {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT actif FROM serveurs WHERE id = ?', [id], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results[0].actif);
+      }
+    });
+  });
+}
+
+// Vérifie si un serveur est global : paramètre id = id du serveur
+function isServerGlobal(id) {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT global FROM serveurs WHERE id = ?', [id], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results[0].global);
       }
     });
   });
@@ -223,10 +314,13 @@ module.exports = {
   connectToDB,
   closeConnection,
   getAllServers,
+  getServerById,
   getAllActiveServers,
   getAllMinecraftServers,
   getAllActiveMinecraftServers,
   getServerById,
+  isServerActive,
+  isServerGlobal,
   getAllInvestors,
   getInvestorByName,
   addInvestor,
