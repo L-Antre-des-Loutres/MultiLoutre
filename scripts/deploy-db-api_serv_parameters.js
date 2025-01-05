@@ -2,6 +2,21 @@ const mysql = require('mysql2');
 const { db_host, db_user, db_password, api_db_name } = require('../config.json');
 const { log_i, log_s, log_e, error_c, reset_c } = require('../color_code.json');
 
+/*
+Table routes {
+    id INT [pk, increment]
+    alias VARCHAR(255) [unique, not null]
+    route TEXT [not null]
+    description TEXT
+    methode ENUM('GET', 'POST', 'PUT', 'DELETE', 'PATCH') [not null]
+}
+
+Table parameters {
+    parametre VARCHAR(255) [unique, not null]
+    valeur TEXT
+}
+*/
+
 // Création de la connexion à MySQL
 const connection = mysql.createConnection({
   host: db_host,

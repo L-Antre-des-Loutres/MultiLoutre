@@ -2,6 +2,62 @@ const mysql = require('mysql2');
 const { db_host, db_user, db_password, serv_db_name } = require('../config.json');
 const { log_i, log_s, log_e, error_c, reset_c } = require('../color_code.json');
 
+/*
+Table serveurs {
+    id INT [pk, increment]
+    nom VARCHAR(255) [not null]
+    jeu VARCHAR(255) [not null]
+    version VARCHAR(50) [not null]
+    modpack VARCHAR(255) [not null]
+    modpack_url VARCHAR(255)
+    nom_monde VARCHAR(255) [not null]
+    embed_color VARCHAR(7) [not null]
+    path_serv TEXT [not null]
+    start_script VARCHAR(255) [not null]
+    actif BOOLEAN [default: false]
+    global BOOLEAN [default: true]
+}
+
+Table investisseurs {
+    id INT [pk, increment]
+    nom VARCHAR(255) [unique, not null]
+}
+
+Table administrateurs {
+    id INT [pk, increment]
+    nom VARCHAR(255) [unique, not null]
+}
+
+Table serveurs_investisseurs {
+    serveur_id INT [ref: > serveurs.id]
+    investisseur_id INT [ref: > investisseurs.id]
+
+    indexes {
+        (serveur_id, investisseur_id) [unique]
+    }
+}
+
+Table serveurs_administrateurs {
+    serveur_id INT [ref: > serveurs.id]
+    admin_id INT [ref: > administrateurs.id]
+
+    indexes {
+        (serveur_id, admin_id) [unique]
+    }
+}
+
+Table rcon_parameters {
+    host_primaire VARCHAR(255) [not null]
+    host_secondaire VARCHAR(255) [not null]
+    rcon_password VARCHAR(255) [not null]
+}
+
+Table serveurs_actuels {
+    id_serv_primaire INT [ref: > serveurs.id]
+    id_serv_secondaire INT [ref: > serveurs.id]
+}
+*/
+
 // Création de la connexion à MySQL
 const connection = mysql.createConnection({
   host: db_host,
@@ -113,12 +169,20 @@ connection.connect((err) => {
 
           createTable(`
             CREATE TABLE IF NOT EXISTS rcon_parameters (
-              id INT AUTO_INCREMENT PRIMARY KEY,
               host_primaire VARCHAR(255) NOT NULL,
               host_secondaire VARCHAR(255) NOT NULL,
               rcon_password VARCHAR(255) NOT NULL
             );
           `, 'rcon_parameters'),
+
+          createTable(`
+            CREATE TABLE IF NOT EXISTS serveurs_actuels (
+              id_serv_primaire INT,
+              id_serv_secondaire INT,
+              FOREIGN KEY (id_serv_primaire) REFERENCES serveurs(id) ON DELETE CASCADE,
+              FOREIGN KEY (id_serv_secondaire) REFERENCES serveurs(id) ON DELETE CASCADE
+            );
+          `, 'serveurs_actuels')
         ]);
         
         console.log(log_s + 'Toutes les tables ont été créées ou existent déjà.');

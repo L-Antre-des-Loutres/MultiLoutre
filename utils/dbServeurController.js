@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 const fs = require('fs');
+const { log_i, log_s, log_e, important_c, error_c, reset_c } = require(__dirname + '/../color_code.json');
 
 /*
 Table serveurs {
@@ -46,10 +47,14 @@ Table serveurs_administrateurs {
 }
 
 Table rcon_parameters {
-    id INT [pk, increment]
     host_primaire VARCHAR(255) [not null]
     host_secondaire VARCHAR(255) [not null]
     rcon_password VARCHAR(255) [not null]
+}
+
+Table serveurs_actuels {
+    id_serv_primaire INT [ref: > serveurs.id]
+    id_serv_secondaire INT [ref: > serveurs.id]
 }
 */
 
@@ -193,6 +198,50 @@ function getServerById(id) {
     });
   });
 }
+
+// Récupère le serveur primaire : sans paramètre
+function getServerPrimaire() {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT id_serv_primaire FROM serveurs_actuels', (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results[0].id_serv_primaire);
+      }
+    });
+  });
+}
+
+// Récupère le serveur secondaire : sans paramètre
+function getServerSecondaire() {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT id_serv_secondaire FROM serveurs_actuels', (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results[0].id_serv_secondaire);
+      }
+    });
+  });
+}
+
+// Regarde (avec l'api) si le serveur est ouvert et le nombre de joueurs : paramètre id = id du serveur
+async function getServeurStatus(id) {
+  try {
+    let apiUrl = `https://api.antredesloutres.fr/serveurs/infos/${id}`;
+
+    let apiResponse = await fetch(apiUrl);
+    let apiData = await apiResponse.json();
+
+    return {
+        online: apiData.online,
+        nb_joueurs: apiData.nb_joueurs
+    };
+  } catch (error) {
+    console.log(log_e + 'Erreur lors de la récupération des informations du serveur : ' + important_c + error + reset_c);
+  }
+}
+
 
 // Vérifie si un serveur est actif : paramètre id = id du serveur
 function isServerActive(id) {
@@ -351,6 +400,9 @@ module.exports = {
   getAllMinecraftServers,
   getAllActiveMinecraftServers,
   getServerById,
+  getServerPrimaire,
+  getServerSecondaire,
+  getServeurStatus,
   isServerActive,
   isServerGlobal,
   getAllInvestors,

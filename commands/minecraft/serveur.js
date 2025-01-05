@@ -22,9 +22,56 @@ module.exports = {
 
         // Pour l'action "check", pas besoin d'envoyer la liste des serveurs
         if (action === 'check') {
-            return interaction.reply('Fonction check selectionnée');
+            let servPrimaire, servSecondaire;
+            let servPrimaireEmoji, servSecondaireEmoji;
+            let servPrimaireIsOnline, servSecondaireIsOnline;
+            let servPrimairenbJoueurs, servSecondairenbJoueurs;
+            try {
+                servPrimaire = await dbController.getServerById(await dbController.getServerPrimaire());
+                servSecondaire = await dbController.getServerById(await dbController.getServerSecondaire());
+                servPrimaireEmoji = await dbController.getServerEmoji(servPrimaire);
+                servSecondaireEmoji = await dbController.getServerEmoji(servSecondaire);
+
+                const servPrimaireStatus = await dbController.getServeurStatus(servPrimaire);
+                servPrimaireIsOnline = servPrimaireStatus.online;
+                servPrimairenbJoueurs = servPrimaireStatus.nb_joueurs;
+
+                const servSecondaireStatus = await dbController.getServeurStatus(servSecondaire);
+                servSecondaireIsOnline = servSecondaireStatus.online;
+                servSecondairenbJoueurs = servSecondaireStatus.nb_joueurs;
+            } catch (error) {
+                console.log(log_e + 'Erreur lors de la récupération des serveurs principaux : ' + important_c + error + reset_c);
+            }
+
+            if (!servPrimaire || !servSecondaire) {
+                return interaction.reply({
+                    content: 'Les serveurs n\'ont pas été trouvés. Veuillez réessayer plus tard ou contactez un administrateur.',
+                    flags: MessageFlags.Ephemeral 
+                });
+            }
+
+            let primaryOnlineText, secondaryOnlineText;
+            if (servPrimaireIsOnline) { primaryOnlineText = `🟢 ${servPrimairenbJoueurs} joueur(s) en ligne`; } else { primaryOnlineText = `🔴 Serveur hors ligne` };
+            if (servSecondaireIsOnline) { secondaryOnlineText = `🟢 ${servSecondairenbJoueurs} joueur(s) en ligne`; } else { secondaryOnlineText = `🔴 Serveur hors ligne` };
+
+
+            const embed = new EmbedBuilder()
+                .setTitle('Voici les serveurs actuellement ouverts !')
+                .addFields(
+                    { name: servPrimaireEmoji + ' Serveur primaire', value: `${servPrimaire?.nom} (${servPrimaire.version})\nModpack : ${servPrimaire.modpack}\n\n${primaryOnlineText}\n\`primaire.antredesloutres.fr\``  || 'Mmmmmh...?', inline: true },
+                    { name: servSecondaireEmoji + ' Serveur secondaire', value: `${servSecondaire?.nom} (${servSecondaire.version})\nModpack : ${servSecondaire.modpack}\n\n${secondaryOnlineText}\n\`secondaire.antredesloutres.fr\`` || 'Mmmmmh...?', inline: true }
+                )
+                .setFooter({
+                    text: "Mineotter",
+                    iconURL: interaction.client.user.displayAvatarURL()
+                })
+                .setTimestamp()
+                .setColor(bot_color)
+
+            return interaction.reply({ embeds: [embed] });
         }
 
+        // Autres actions
         try {
             const servers = await dbController.getAllActiveMinecraftServers();
             if (!servers || servers.length === 0) {
@@ -57,7 +104,7 @@ module.exports = {
                 flags: MessageFlags.Ephemeral 
             });
         } catch (error) {
-            console.error(log_e + 'Erreur lors de la récupération des serveurs Minecraft : ' + log_i + error + reset_c);
+            console.log(log_e + 'Erreur lors de la récupération des serveurs Minecraft : ' + important_c + error + reset_c);
             await interaction.reply({
                 content: 'Une erreur s\'est produite lors de l\'exécution de la commande. Veuillez réessayer plus tard.',
                 flags: MessageFlags.Ephemeral 

@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise'); // Utilisation du wrapper promise
-const { db_host, db_user, db_password, serv_db_name } = require('../config.json');
-const { log_i, log_s, log_e, important_c, error_c, reset_c } = require('../color_code.json');
+const { db_host, db_user, db_password, serv_db_name } = require(__dirname + '/../config.json');
+const { log_i, log_s, log_e, important_c, error_c, reset_c } = require(__dirname + '/../color_code.json');
 
 async function dbIntegrityCheck() {
   console.log(log_i + `Commande "${important_c}check-db-integrity${reset_c}" lancée. Vérification de l'intégrité de la base de données...`);

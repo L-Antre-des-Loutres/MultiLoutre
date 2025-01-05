@@ -15,9 +15,10 @@ module.exports = {
     try {
       await command.execute(interaction);
     } catch (error) {
-      console.log(log_e + 'Erreur lors de l\'exécution de la commande : "', error_c + error + reset_c + '"');
+      console.log(log_e + 'Erreur lors de l\'interaction de la commande. Erreur complète : ');
+      console.error(error);
       await interaction.reply({
-        content: 'Une erreur est survenue lors de l\'exécution de cette commande !',
+        content: 'Une erreur est survenue lors de l\'exécution de cette commande.',
         flags: MessageFlags.Ephemeral
       });
     }

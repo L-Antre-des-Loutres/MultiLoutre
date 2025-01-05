@@ -1,7 +1,7 @@
 const { Events, EmbedBuilder, MessageFlags } = require('discord.js');
-const { bot_color } = require(__dirname + '/../config.json');
+const { bot_color, api_token } = require(__dirname + '/../config.json');
 const dbController = require(__dirname + '/../utils/dbServeurController');
-const { log_e, log_i, reset_c } = require(__dirname + '/../color_code.json');
+const { log_e, important_c, reset_c } = require(__dirname + '/../color_code.json');
 const fetch = require('node-fetch');
 
 module.exports = {
@@ -39,7 +39,7 @@ module.exports = {
                 });
             }
         } catch (error) {
-            console.error(log_e + 'Erreur lors de l\'exécution de l\'interaction : ' + log_i + error + reset_c);
+            console.error(log_e + 'Erreur lors de l\'exécution de l\'interaction : ' + important_c + error + reset_c);
             await interaction.reply({
                 content: 'Une erreur s\'est produite lors de l\'exécution de l\'action.',
                 flags: MessageFlags.Ephemeral 
@@ -55,9 +55,38 @@ module.exports = {
         });
     },
 
-    // Fonction pour "lancer"
     async executeLancer(interaction, serverInfo) {
-        await interaction.reply("Fonction lancer selectionnée avec le serveur " + serverInfo.nom);
+        const ApiLink = 'https://api.antredesloutres.fr/serveurs/start';
+        try {
+            const response = await fetch(ApiLink, {
+                method: 'POST',
+                body: JSON.stringify({ id_serv: serverInfo.id, client_token: api_token }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+
+            if (data.status == true) {
+                const embed = new EmbedBuilder()
+                    .setTitle(`${interaction.user.username} a lancé le serveur ${serverInfo.nom} !`)
+                    .setDescription(`Un message devrait t'avertir lorsque le serveur sera accessible.`)
+                    .setFooter({
+                        text: "Mineotter",
+                        iconURL: interaction.client.user.displayAvatarURL()
+                    })
+                    .setTimestamp()
+                    .setColor(bot_color);
+
+                await interaction.reply({ embeds: [embed] });
+            } else {
+                await this.apiErrorHandle(interaction, data);                 
+            }
+        } catch (error) {
+            console.error(log_e + 'Erreur lors de l\'exécution de l\'interaction "lancer" : ' + important_c + error + reset_c);
+            await interaction.reply({
+                content: 'Une erreur s\'est produite lors de l\'exécution de l\'action. Veuillez réessayer ou contactez un administrateur.',
+                flags: MessageFlags.Ephemeral 
+            });
+        }
     },
 
     async executeInfos(interaction, serverInfo) {
@@ -99,5 +128,54 @@ module.exports = {
             .setColor(serverInfo.embed_color);
 
         await interaction.reply({ embeds: [embed] });
+    },
+
+    async apiErrorHandle(interaction, data) {
+        switch (data.code) {
+            case '400':
+                console.log(log_e + 'Impossible de lancer le serveur. Paramètres manquants ou incorrects. Retour de l\'API : ' + important_c + data.message + reset_c);
+                await interaction.reply({
+                    content: 'Impossible de lancer le serveur. Paramètres manquants ou incorrects. Veuillez contacter un administrateur.',
+                    flags: MessageFlags.Ephemeral 
+                });
+                break;
+            case '401' || '403':
+                console.log(log_e + 'Impossible de lancer le serveur. Problème de permissions. Retour de l\'API : ' + important_c + data.message + reset_c);
+                await interaction.reply({
+                    content: 'Impossible de lancer le serveur. Problème de permissions. Veuillez contacter un administrateur.',
+                    flags: MessageFlags.Ephemeral 
+                });
+            case '404':
+                console.log(log_e + 'Impossible de lancer le serveur. Serveur introuvable. Retour de l\'API : ' + important_c + data.message + reset_c);
+                await interaction.reply({
+                    content: 'Impossible de lancer le serveur. L\'API ne répond pas. Veuillez réessayer plus tard ou contacter un administrateur.',
+                    flags: MessageFlags.Ephemeral 
+                });
+                console.log(log_e + 'Impossible de lancer le serveur. Serveur introuvable. Retour de l\'API : ' + important_c + data.message + reset_c);
+            case '409':
+                console.log(log_e + 'Impossible de lancer le serveur. Des joueurs sont déjà connectés. Retour de l\'API : ' + important_c + data.message + reset_c);
+                await interaction.reply({
+                    content: 'Impossible de lancer le serveur. Des joueurs sont déjà connectés. Veuillez attendre qu\'ils se déconnectent.',
+                    flags: MessageFlags.Ephemeral 
+                });
+            case '422':
+                console.log(log_e + 'Impossible de lancer le serveur. Serveur déjà lancé. Retour de l\'API : ' + important_c + data.message + reset_c);
+                await interaction.reply({
+                    content: 'Impossible de lancer le serveur. Le serveur est déjà lancé. Veuillez attendre qu\'il soit arrêté.',
+                    flags: MessageFlags.Ephemeral 
+                });
+            case '500' || '503' || '504':
+                console.log(log_e + 'Impossible de lancer le serveur. Erreur interne. Retour de l\'API : ' + important_c + data.message + reset_c);
+                await interaction.reply({
+                    content: 'Impossible de lancer le serveur. Erreur internes. Veuillez réessayer ou contacter un administrateur.',
+                    flags: MessageFlags.Ephemeral 
+                });
+            default:
+                console.log(log_e + 'Impossible de lancer le serveur. Erreur inconnue. Retour de l\'API : ' + important_c + data.message + reset_c);
+                await interaction.reply({
+                    content: 'Impossible de lancer le serveur. Erreur inconnue. Veuillez réessayer ou contacter un administrateur.',
+                    flags: MessageFlags.Ephemeral
+                });
+        }
     }
 };
