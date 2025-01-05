@@ -74,12 +74,9 @@ module.exports = {
         }
 
         // Requête à l'API pour obtenir les informations de statut du serveur
-        console.log(serverInfo);
         let apiUrl = `https://api.antredesloutres.fr/serveurs/infos/${serverInfo.id}`;
-        console.log(apiUrl);
         let apiResponse = await fetch(apiUrl);
         let apiData = await apiResponse.json();
-        console.log(apiData);
         
         if (apiData.status == false) {
             return interaction.reply({
