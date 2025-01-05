@@ -1,0 +1,9 @@
+{
+  "log_s": "\u001b[32m[success]\u001b[0m ",
+  "log_i": "\u001b[34m[info]\u001b[0m ",
+  "log_w": "\u001b[33m[warn]\u001b[0m ",
+  "log_e": "\u001b[31m[error]\u001b[0m ",
+  "error_c": "\u001b[31m",
+  "important_c": "\u001b[33m",
+  "reset_c": "\u001b[0m"
+}
