@@ -2,6 +2,7 @@ const { Events, EmbedBuilder, MessageFlags } = require('discord.js');
 const { bot_color } = require(__dirname + '/../config.json');
 const dbController = require(__dirname + '/../utils/dbServeurController');
 const { log_e, log_i, reset_c } = require(__dirname + '/../color_code.json');
+const fetch = require('node-fetch');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -59,7 +60,6 @@ module.exports = {
         await interaction.reply("Fonction lancer selectionnée avec le serveur " + serverInfo.nom);
     },
 
-    // Fonction pour "infos"
     async executeInfos(interaction, serverInfo) {
         let isActiveText = serverInfo.actif ? 'Le serveur peut être lancé !' : 'Le serveur est actuellement désactivé.';
         let isGlobalText = serverInfo.global ? '(Serveur global)' : '(Serveur investisseur)';
@@ -73,23 +73,34 @@ module.exports = {
             serveurIp = '`secondaire.antredesloutres.fr`';
         }
 
-        let statutText = '';
-        if (true) {
-            statutText = 'En ligne (0 joueurs connectés)';
+        // Requête à l'API pour obtenir les informations de statut du serveur
+        console.log(serverInfo);
+        let apiUrl = `https://api.antredesloutres.fr/serveurs/infos/${serverInfo.id}`;
+        console.log(apiUrl);
+        let apiResponse = await fetch(apiUrl);
+        let apiData = await apiResponse.json();
+        console.log(apiData);
+        
+        if (apiData.status == false) {
+            return interaction.reply({
+                content: 'Impossible de récupérer les informations du serveur depuis l\'API. Veuillez réessayer plus tard ou contactez un administrateur.',
+                flags: MessageFlags.Ephemeral 
+            });
         }
+        let statusText = apiData.online ? `En ligne (${apiData.nb_joueurs} joueurs connectés)` : 'Hors ligne';
 
         const embed = new EmbedBuilder()
             .setTitle(`Informations de ${serverInfo.nom} ${isGlobalText}`)
             .setDescription(`
-                **Version :** ${serverInfo.version}\n**Modpack :** ${serverEmoji} ${serverInfo.modpack}\n**IP :** ${serveurIp}\n\n**Serveur :** ${statutText}\n${isActiveText}`    
+                **Version :** ${serverInfo.version}\n**Modpack :** ${serverEmoji} ${serverInfo.modpack}\n**IP :** ${serveurIp}\n\n**Statut du serveur :** ${statusText}\n${isActiveText}`
             )
             .setFooter({
                 text: "Mineotter",
                 iconURL: interaction.client.user.displayAvatarURL()
             })
             .setTimestamp()
-            .setColor(bot_color);
+            .setColor(serverInfo.embed_color);
 
         await interaction.reply({ embeds: [embed] });
-    },
+    }
 };
