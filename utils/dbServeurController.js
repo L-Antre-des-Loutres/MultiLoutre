@@ -93,8 +93,9 @@ function closeConnection() {
 
 // Récupère l'emoji du serveur : paramètre server = objet serveur
 function getServerEmoji(server) {
+  console.log('jeu : ' + server.jeu);
   let serveur_emoji = '';
-  if (server.jeu !== 'Minecraft') {
+  if (server.jeu != 'Minecraft') {
     serveur_emoji = "<:other_servers:1325467780602138736>";
   } else {
     if (server.modpack == 'Minecraft Vanilla') {
@@ -102,8 +103,8 @@ function getServerEmoji(server) {
     } else {
         serveur_emoji = `<:mc_secondaire:1325274670215200789>`;
     }
-    return serveur_emoji;
   }
+  return serveur_emoji;
 }
 
 // Récupère l'image du serveur : paramètre server = objet serveur

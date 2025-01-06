@@ -29,8 +29,6 @@ module.exports = {
             try {
                 servPrimaire = await dbController.getServerById(await dbController.getServerPrimaire());
                 servSecondaire = await dbController.getServerById(await dbController.getServerSecondaire());
-                servPrimaireEmoji = await dbController.getServerEmoji(servPrimaire);
-                servSecondaireEmoji = await dbController.getServerEmoji(servSecondaire);
 
                 const servPrimaireStatus = await dbController.getServeurStatus(servPrimaire);
                 servPrimaireIsOnline = servPrimaireStatus.online;
@@ -58,8 +56,8 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle('Voici les serveurs actuellement ouverts !')
                 .addFields(
-                    { name: servPrimaireEmoji + ' Serveur primaire', value: `${servPrimaire?.nom} (${servPrimaire.version})\nModpack : ${servPrimaire.modpack}\n\n${primaryOnlineText}\n\`primaire.antredesloutres.fr\``  || 'Mmmmmh...?', inline: true },
-                    { name: servSecondaireEmoji + ' Serveur secondaire', value: `${servSecondaire?.nom} (${servSecondaire.version})\nModpack : ${servSecondaire.modpack}\n\n${secondaryOnlineText}\n\`secondaire.antredesloutres.fr\`` || 'Mmmmmh...?', inline: true }
+                    { name: dbController.getServerEmoji(servPrimaire) + ' Serveur primaire', value: `${servPrimaire?.nom} (${servPrimaire.version})\nModpack : ${servPrimaire.modpack}\n\n${primaryOnlineText}\n\`primaire.antredesloutres.fr\``  || 'Mmmmmh...?', inline: true },
+                    { name: dbController.getServerEmoji(servSecondaire) + ' Serveur secondaire', value: `${servSecondaire?.nom} (${servSecondaire.version})\nModpack : ${servSecondaire.modpack}\n\n${secondaryOnlineText}\n\`secondaire.antredesloutres.fr\`` || 'Mmmmmh...?', inline: true }
                 )
                 .setFooter({
                     text: "Mineotter",
