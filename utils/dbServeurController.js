@@ -93,7 +93,6 @@ function closeConnection() {
 
 // Récupère l'emoji du serveur : paramètre server = objet serveur
 function getServerEmoji(server) {
-  console.log('jeu : ' + server.jeu);
   let serveur_emoji = '';
   if (server.jeu != 'Minecraft') {
     serveur_emoji = "<:other_servers:1325467780602138736>";
