@@ -35,7 +35,7 @@ module.exports = {
                         serveur_title = `${serveur_emoji} ${server.nom} (investisseur)`;
                     }
 
-                    fields.push({name: serveur_title, value: `**Jeu:** ${server.jeu} ${server.version}\n**Modpack:** [${server.modpack}](${server.modpack_url})`, inline: false});
+                    fields.push({name: serveur_title, value: `**Jeu :** ${server.jeu} ${server.version}\n**Modpack :** [${server.modpack}](${server.modpack_url})`, inline: false});
                 });
             } else {
                 serverListDescription = 'Aucun serveur disponible actuellement.';

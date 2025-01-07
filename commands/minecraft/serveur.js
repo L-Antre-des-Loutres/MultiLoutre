@@ -30,11 +30,11 @@ module.exports = {
                 servPrimaire = await dbController.getServerById(await dbController.getServerPrimaire());
                 servSecondaire = await dbController.getServerById(await dbController.getServerSecondaire());
 
-                const servPrimaireStatus = await dbController.getServeurStatus(servPrimaire);
+                const servPrimaireStatus = await dbController.getServeurStatus(servPrimaire.id);
                 servPrimaireIsOnline = servPrimaireStatus.online;
                 servPrimairenbJoueurs = servPrimaireStatus.nb_joueurs;
 
-                const servSecondaireStatus = await dbController.getServeurStatus(servSecondaire);
+                const servSecondaireStatus = await dbController.getServeurStatus(servSecondaire.id);
                 servSecondaireIsOnline = servSecondaireStatus.online;
                 servSecondairenbJoueurs = servSecondaireStatus.nb_joueurs;
             } catch (error) {
@@ -52,12 +52,16 @@ module.exports = {
             if (servPrimaireIsOnline) { primaryOnlineText = `🟢 ${servPrimairenbJoueurs} joueur(s) en ligne`; } else { primaryOnlineText = `🔴 Serveur hors ligne` };
             if (servSecondaireIsOnline) { secondaryOnlineText = `🟢 ${servSecondairenbJoueurs} joueur(s) en ligne`; } else { secondaryOnlineText = `🔴 Serveur hors ligne` };
 
+            function formatEmbedFields (server, onlineText) { // Pour un meilleur rendu sur téléphone, des caractères invisibles ont été ajoutés entre les accolades
+                return `${dbController.getServerEmoji(server)} ${server.nom} (${server.version})\n**Modpack :** [${server.modpack}](${server.modpack_url})\n\n${onlineText}\n`;
+            }
+
 
             const embed = new EmbedBuilder()
                 .setTitle('Voici les serveurs actuellement ouverts !')
-                .addFields(
-                    { name: dbController.getServerEmoji(servPrimaire) + ' Serveur primaire', value: `${servPrimaire?.nom} (${servPrimaire.version})\nModpack : ${servPrimaire.modpack}\n\n${primaryOnlineText}\n\`primaire.antredesloutres.fr\``  || 'Mmmmmh...?', inline: true },
-                    { name: dbController.getServerEmoji(servSecondaire) + ' Serveur secondaire', value: `${servSecondaire?.nom} (${servSecondaire.version})\nModpack : ${servSecondaire.modpack}\n\n${secondaryOnlineText}\n\`secondaire.antredesloutres.fr\`` || 'Mmmmmh...?', inline: true }
+                .addFields(  // Pour un meilleur rendu sur téléphone, des caractères invisibles
+                    { name: 'Serveur principal', value: formatEmbedFields(servPrimaire, primaryOnlineText) + `\`primaire.antredesloutres.fr\`\n‎`, inline: true },
+                    { name: 'Serveur secondaire', value: formatEmbedFields(servSecondaire, secondaryOnlineText) + `\`secondaire.antredesloutres.fr\`\n‎`, inline: true }
                 )
                 .setFooter({
                     text: "Mineotter",
