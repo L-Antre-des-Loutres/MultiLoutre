@@ -56,36 +56,26 @@ module.exports = {
     },
 
     async executeLancer(interaction, serverInfo) {
-        const ApiLink = 'https://api.antredesloutres.fr/serveurs/start';
-        try {
-            const response = await fetch(ApiLink, {
-                method: 'POST',
-                body: JSON.stringify({ id_serv: serverInfo.id, client_token: api_token }),
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await response.json();
+        let serverStartResponse = await dbController.startServer(serverInfo.id);
 
-            if (data.status == true) {
-                const embed = new EmbedBuilder()
-                    .setTitle(`${interaction.user.username} a lancé le serveur ${serverInfo.nom} !`)
-                    .setDescription(`Un message devrait t'avertir lorsque le serveur sera accessible.`)
-                    .setFooter({
-                        text: "Mineotter",
-                        iconURL: interaction.client.user.displayAvatarURL()
-                    })
-                    .setTimestamp()
-                    .setColor(bot_color);
+        if (!serverStartResponse) {
+            return interaction.reply({ content: 'Une erreur s\'est produite lors de l\'exécution de l\'action. Veuillez réessayer ou contactez un administrateur.', flags: MessageFlags.Ephemeral });
+        }
 
-                await interaction.reply({ embeds: [embed] });
-            } else {
-                await this.apiErrorHandle(interaction, data);                 
-            }
-        } catch (error) {
-            console.error(log_e + 'Erreur lors de l\'exécution de l\'interaction "lancer" : ' + important_c + error + reset_c);
-            await interaction.reply({
-                content: 'Une erreur s\'est produite lors de l\'exécution de l\'action. Veuillez réessayer ou contactez un administrateur.',
-                flags: MessageFlags.Ephemeral 
-            });
+        if (data.status == true) {
+            const embed = new EmbedBuilder()
+                .setTitle(`${interaction.user.username} a lancé le serveur ${serverInfo.nom} !`)
+                .setDescription(`Un message devrait t'avertir lorsque le serveur sera accessible.`)
+                .setFooter({
+                    text: "Mineotter",
+                    iconURL: interaction.client.user.displayAvatarURL()
+                })
+                .setTimestamp()
+                .setColor(bot_color);
+
+            await interaction.reply({ embeds: [embed] });
+        } else {
+            await this.apiErrorHandle(interaction, data);                 
         }
     },
 
@@ -93,7 +83,6 @@ module.exports = {
         let isActiveText = serverInfo.actif ? 'Le serveur peut être lancé !' : 'Le serveur est actuellement désactivé.';
         let isGlobalText = serverInfo.global ? '(Serveur global)' : '(Serveur investisseur)';
         let serverEmoji = dbController.getServerEmoji(serverInfo);
-        let serverImage = dbController.getServerImage(serverInfo); // Inutilisé pour le moment
 
         let serveurIp = '';
         if (serverInfo.nom === 'La Vanilla') {
@@ -102,23 +91,19 @@ module.exports = {
             serveurIp = '`secondaire.antredesloutres.fr`';
         }
 
-        // Requête à l'API pour obtenir les informations de statut du serveur
-        let apiUrl = `https://api.antredesloutres.fr/serveurs/infos/${serverInfo.id}`;
-        let apiResponse = await fetch(apiUrl);
-        let apiData = await apiResponse.json();
-        
-        if (apiData.status == false) {
+        let serverStatus = await dbController.getServeurStatus(serverInfo.id);
+        if (!serverStatus) {
             return interaction.reply({
                 content: 'Impossible de récupérer les informations du serveur depuis l\'API. Veuillez réessayer plus tard ou contactez un administrateur.',
                 flags: MessageFlags.Ephemeral 
             });
         }
-        let statusText = apiData.online ? `En ligne (${apiData.nb_joueurs} joueurs connectés)` : 'Hors ligne';
+        let statusText = serverStatus.online ? `En ligne (${serverStatus.nb_joueurs} joueurs connectés)` : 'Hors ligne';
 
         const embed = new EmbedBuilder()
             .setTitle(`Informations de ${serverInfo.nom} ${isGlobalText}`)
             .setDescription(`
-                **Version :** ${serverInfo.version}\n**Modpack :** ${serverEmoji} ${serverInfo.modpack}\n**IP :** ${serveurIp}\n\n**Statut du serveur :** ${statusText}\n${isActiveText}`
+                **Version :** ${serverInfo.version}\n**Modpack :** ${serverEmoji} [${serverInfo.modpack}](${serverInfo.modpack_url})\n**IP :** ${serveurIp}\n\n**Statut du serveur :** ${statusText}\n${isActiveText}`
             )
             .setFooter({
                 text: "Mineotter",
