@@ -7,7 +7,7 @@
 - [Pourquoi ce bot ?](#Pourquoi ce bot ?)
 - [C'est quoi ces fonctionnalités ?](#C'est quoi ces fonctionnalités ?)
 - [Comment l'instaler ?](#Comment l'instaler ?)
-- [Il y a t'il une documentation pour l'améliorer ?](#Il y a t'il une documentation pour l'améliorer ?)
+- [Il y a t'il une documentation pour l'améliorer/l'adapter ?](#Il y a t'il une documentation pour l'améliorer/l'adapter ?)
 - [Contributions](#Contributions)
 
 ## Pourquoi ce bot ?
@@ -26,13 +26,14 @@ Mineotter est conçu pour les serveurs Discord qui souhaitent permettre à leurs
 
 ## Comment l'instaler ?
 
-Il suffit simplement de télécharger la [dernière version](https://github.com/Corentin-cott/Mineotter-Bot/releases) de Mineotter, d'installer ses dépendances, puis de lancer le bot avec Node.
+Il suffit simplement de télécharger la [dernière version](https://github.com/Corentin-cott/Mineotter-Bot/releases) de Mineotter dans les release, ou cloner le depot en fesant `git clone https://github.com/Corentin-cott/Mineotter-Bot.git`.
+Vous devrez également installer node pour lancer le bot avec la commande `node index.js`.
 
 Bien sûr, vous ne gérez probablement pas vos serveurs de la même manière que l'Antre des Loutres, donc vous devrez probablement apporter quelques modifications pour adapter le bot à votre environnement.
 
 De plus, pour fonctionner de manière plus sécurisée et plus simple, une API est nécessaire pour gérer le lancement des serveurs et d'autres fonctionnalités. L'[API Serveur de Mathéo](https://github.com/matheo-1712/API-Serveur) fonctionne très bien avec Mineotter et c'est celle que je vous conseille !
 
-## Il y a t'il une documentation pour l'améliorer ?
+## Il y a t'il une documentation pour l'améliorer/l'adapter ?
 
 Pas encore mais, mais c'est prévu oui.
 
