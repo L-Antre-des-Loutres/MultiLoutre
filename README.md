@@ -20,7 +20,10 @@ Nous proposons également des services en hébergeant et en administrant nous-m�
 
 ## C'est quoi ces fonctionnalités ?
 
-Mineotter est conçu pour servir d'intermédiaire entre des utilisateurs Discord et des serveurs Minecraft. Cela inclut la récupération des informations, le lancement et l'arrêt de serveurs, mais également la création de chats communs entre un salon Discord et le chat d'un serveur Minecraft !
+Mineotter est conçu pour servir d'intermédiaire entre des utilisateurs Discord et des serveurs Minecraft. Cela inclut la récupération des informations, le lancement et l'arrêt des serveurs, mais également l'envoi des stats de jeux d'un joueur !
+
+> [!TIP]
+> Certaines fonctionnalité peuvent ne pas encore être présentes, je vous invite à regarder les [issues de ce dépot](https://github.com/Corentin-cott/Mineotter-Bot/issues?q=is%3Aissue) pour voir se qui est développer, ce qui est en cours, et se qui est prévu.
 
 Mineotter est conçu pour les serveurs Discord qui souhaitent permettre à leurs utilisateurs d'être autonomes en leur offrant la possibilité d'interagir directement avec les serveurs Minecraft.
 
