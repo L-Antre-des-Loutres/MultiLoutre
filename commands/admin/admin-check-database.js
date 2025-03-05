@@ -9,6 +9,7 @@ module.exports = {
     .setDescription('Vérifie l\'intégrité de la base de données.'),
 
   async execute(interaction) {
+    /*
     try {
       await interaction.reply('Vérification de l\'intégrité de la base de données en cours...');
       
@@ -43,5 +44,7 @@ module.exports = {
       console.log(log_e + 'Erreur lors de la vérification : ', error_c + error + reset_c);
       await interaction.editReply('Une erreur est survenue lors de la vérification.');
     }
+    */
+    await interaction.reply('Désactivé pour le moment.');
   },
 };

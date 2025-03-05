@@ -3,6 +3,7 @@ const { db_host, db_user, db_password, serv_db_name } = require(__dirname + '/..
 const { log_i, log_s, log_e, important_c, error_c, reset_c } = require(__dirname + '/../color_code.json');
 
 async function dbIntegrityCheck() {
+  /*
   console.log(log_i + `Commande "${important_c}check-db-integrity${reset_c}" lancée. Vérification de l'intégrité de la base de données...`);
 
   // On prépare un tableau pour les résultats
@@ -115,7 +116,10 @@ async function checkDataConsistency(connection, utils_results) {
   } else {
     console.log(log_s + 'Aucune incohérence trouvée dans serveurs_administrateurs.' + reset_c);
     utils_results.push({ administrateurs: '🟢 Aucune incohérence trouvée dans serveurs_administrateurs' });
+
   }
+  */
+  return [];
 }
 
 module.exports = { dbIntegrityCheck };
