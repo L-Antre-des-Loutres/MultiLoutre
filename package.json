@@ -10,8 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.17.2",
+    "discord.js": "^14.18.0",
     "mysql2": "^3.12.0",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "rcon": "^1.1.0"
   }
 }

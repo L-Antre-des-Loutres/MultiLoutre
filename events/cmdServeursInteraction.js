@@ -1,6 +1,6 @@
 const { Events, EmbedBuilder, MessageFlags } = require('discord.js');
 const { bot_color, api_token } = require(__dirname + '/../config.json');
-const dbController = require(__dirname + '/../utils/dbServeurController');
+const dbServeurController = require(__dirname + '/../utils/dbServeurController');
 const { log_e, important_c, reset_c } = require(__dirname + '/../color_code.json');
 const fetch = require('node-fetch');
 
@@ -16,7 +16,7 @@ module.exports = {
         const action = interaction.customId.split(':')[1];
 
         try {
-            const serverInfo = await dbController.getServerById(selectedServerId);
+            const serverInfo = await dbServeurController.getServerById(selectedServerId);
 
             if (!serverInfo) {
                 return interaction.reply({
@@ -55,43 +55,29 @@ module.exports = {
         });
     },
 
+    // Fonction pour "lancer"
     async executeLancer(interaction, serverInfo) {
-        let serverStartResponse = await dbController.startServer(serverInfo.id);
-
-        if (!serverStartResponse) {
-            return interaction.reply({ content: 'Une erreur s\'est produite lors de l\'exécution de l\'action. Veuillez réessayer ou contactez un administrateur.', flags: MessageFlags.Ephemeral });
-        }
-
-        if (data.status == true) {
-            const embed = new EmbedBuilder()
-                .setTitle(`${interaction.user.username} a lancé le serveur ${serverInfo.nom} !`)
-                .setDescription(`Un message devrait t'avertir lorsque le serveur sera accessible.`)
-                .setFooter({
-                    text: "Mineotter",
-                    iconURL: interaction.client.user.displayAvatarURL()
-                })
-                .setTimestamp()
-                .setColor(bot_color);
-
-            await interaction.reply({ embeds: [embed] });
-        } else {
-            await this.apiErrorHandle(interaction, data);                 
-        }
+        await interaction.reply({
+            content: 'TODO',
+            flags: MessageFlags.Ephemeral
+        })
     },
 
     async executeInfos(interaction, serverInfo) {
         let isActiveText = serverInfo.actif ? 'Le serveur peut être lancé !' : 'Le serveur est actuellement désactivé.';
         let isGlobalText = serverInfo.global ? '(Serveur global)' : '(Serveur investisseur)';
-        let serverEmoji = dbController.getServerEmoji(serverInfo);
+        let serverEmoji = dbServeurController.getServerEmoji(serverInfo);
 
         let serveurIp = '';
         if (serverInfo.nom === 'La Vanilla') {
             serveurIp = '`antredesloutres.fr`';
+        } else if (dbServeurController.isServerPrimary(serverInfo.id)) {
+            serveurIp = '`primaire.antredesloutres.fr`';
         } else {
             serveurIp = '`secondaire.antredesloutres.fr`';
         }
 
-        let serverStatus = await dbController.getServeurStatus(serverInfo.id);
+        let serverStatus = await dbServeurController.getServeurStatus(serverInfo.id);
         if (!serverStatus) {
             return interaction.reply({
                 content: 'Impossible de récupérer les informations du serveur depuis l\'API. Veuillez réessayer plus tard ou contactez un administrateur.',

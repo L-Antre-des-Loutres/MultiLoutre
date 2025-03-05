@@ -32,6 +32,15 @@ function closeConnection() {
   });
 }
 
+function useDatabase(dbName) {
+  return new Promise((resolve, reject) => {
+    connection.query('USE ' + dbName, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+}
+
 function getServerEmoji(server) {
   if (server.jeu !== 'Minecraft') {
     return '<:other_servers:1325467780602138736>';
@@ -42,9 +51,40 @@ function getServerEmoji(server) {
   }
 }
 
-function getAllServers() {
+/*
+Table serveurs {
+    id INT [pk, increment]
+    nom VARCHAR(255) [not null]
+    jeu VARCHAR(255) [not null]
+    version VARCHAR(20) [not null]
+    modpack VARCHAR(255) [default: 'Vanilla']
+    modpack_url VARCHAR(255) [null]
+    nom_monde VARCHAR(255) [default: 'world']
+    embed_color VARCHAR(7) [default: '#000000']
+    path_serv TEXT [not null]
+    start_script VARCHAR(255) [not null]
+    actif BOOLEAN [default: false, not null]
+    global BOOLEAN [default: true, not null]
+}
+*/
+
+function getAllServers(actif, global, jeu) {
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM serveurs', (err, results) => {
+    let query = 'SELECT * FROM serveurs';
+    let params = [];
+    if (actif !== undefined) {
+      query += ' WHERE actif = ?';
+      params.push(actif);
+    }
+    if (global !== undefined) {
+      query += actif !== undefined ? ' AND global = ?' : ' WHERE global = ?';
+      params.push(global);
+    }
+    if (jeu !== undefined) {
+      query += actif !== undefined || global !== undefined ? ' AND jeu = ?' : ' WHERE jeu = ?';
+      params.push(jeu);
+    }
+    connection.query(query, params, (err, results) => {
       if (err) reject(err);
       else resolve(results);
     });
@@ -58,67 +98,6 @@ function getServerById(id) {
       else resolve(results[0]);
     });
   });
-}
-
-function getAllActiveServers() {
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM serveurs WHERE actif = 1', (err, results) => {
-      if (err) reject(err);
-      else resolve(results);
-    });
-  });
-}
-
-function getAllMinecraftServers() {
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM serveurs WHERE jeu = "Minecraft"', (err, results) => {
-      if (err) reject(err);
-      else resolve(results);
-    });
-  });
-}
-
-function getAllActiveMinecraftServers() {
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM serveurs WHERE jeu = "Minecraft" AND actif = 1', (err, results) => {
-      if (err) reject(err);
-      else resolve(results);
-    });
-  });
-}
-
-function getServerPrimaire() {
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT id_serv_primaire FROM serveurs_parameters', (err, results) => {
-      if (err) reject(err);
-      else resolve(results[0]?.id_serv_primaire);
-    });
-  });
-}
-
-function getServerSecondaire() {
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT id_serv_secondaire FROM serveurs_parameters', (err, results) => {
-      if (err) reject(err);
-      else resolve(results[0]?.id_serv_secondaire);
-    });
-  });
-}
-
-async function getServeurStatus(id) {
-  const apiRoute = `${await dbApiParametersController.getRouteByAlias('serveursInfos')}${id}`;
-  try {
-    let apiUrl = new URL(apiRoute);
-    let apiResponse = await fetch(apiUrl);
-    let apiData = await apiResponse.json();
-    return {
-      online: apiData.online,
-      nb_joueurs: apiData.nb_joueurs
-    };
-  } catch (error) {
-    console.error('Error fetching server status:', error);
-    return null;
-  }
 }
 
 function isServerActive(id) {
@@ -139,75 +118,122 @@ function isServerGlobal(id) {
   });
 }
 
-async function startServer(id) {
-  const apiRoute = `${await dbApiParametersController.getRouteByAlias('serveursStart')}`;
-  try {
-    const response = await fetch(ApiLink, {
-        method: 'POST',
-        body: JSON.stringify({ id_serv: serverInfo.id, client_token: api_token }),
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Error starting server:', error);
-    return false;
-  }
+/*
+Table serveurs_parameters {
+    id_serv_primaire INT [ref: > serveurs.id, not null]
+    id_serv_secondaire INT [ref: > serveurs.id, not null]
+    host_primaire VARCHAR(255) [not null]
+    host_secondaire VARCHAR(255) [not null]
+    rcon_password VARCHAR(255) [not null]
 }
+*/
 
-
-function getRconParameters() {
+function getServerPrimaire() {
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM serveurs_parameters LIMIT 1', (err, results) => {
+    connection.query('SELECT id_serv_primaire FROM serveurs_parameters', (err, results) => {
       if (err) reject(err);
-      else resolve(results[0]);
+      else resolve(results[0]?.id_serv_primaire);
     });
   });
 }
 
-function linkServerToInvestor(serverId, utilisateurId) {
+function getServerSecondaire() {
   return new Promise((resolve, reject) => {
-    connection.query(
-      'INSERT INTO serveurs_invests (serveur_id, utilisateur_id) VALUES (?, ?)',
-      [serverId, utilisateurId],
-      (err, results) => {
-        if (err) reject(err);
-        else resolve(results);
-      }
-    );
+    connection.query('SELECT id_serv_secondaire FROM serveurs_parameters', (err, results) => {
+      if (err) reject(err);
+      else resolve(results[0]?.id_serv_secondaire);
+    });
   });
 }
 
-function linkServerToAdministrator(serverId, utilisateurId) {
+function getPrimaryRconParameters() {
+  const rconString = { host: '', port: 25575, password: '' };
   return new Promise((resolve, reject) => {
-    connection.query(
-      'INSERT INTO serveurs_admins (serveur_id, utilisateur_id) VALUES (?, ?)',
-      [serverId, utilisateurId],
-      (err, results) => {
-        if (err) reject(err);
-        else resolve(results);
+    connection.query('SELECT host_primaire, rcon_password FROM serveurs_parameters', (err, results) => {
+      if (err) reject(err);
+      else {
+        rconString.host = results[0]?.host_primaire;
+        rconString.password = results[0]?.rcon_password;
+        resolve(rconString);
       }
-    );
+    });
+  });
+}
+
+function getSecondaryRconParameters() {
+  const rconString = { host: '', port: 25574, password: '' };
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT host_secondaire, rcon_password FROM serveurs_parameters', (err, results) => {
+      if (err) reject(err);
+      else {
+        rconString.host = results[0]?.host_secondaire;
+        rconString.password = results[0]?.rcon_password;
+        resolve(rconString);
+      }
+    });
+  });
+}
+
+function isServerPrimary(id) {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT id_serv_primaire FROM serveurs_parameters WHERE id_serv_primaire = ?', [id], (err, results) => {
+      if (err) reject(err);
+      else resolve(!!results[0]?.id_serv_primaire);
+    });
+  });
+}
+
+function isServerSecondary(id) {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT id_serv_secondaire FROM serveurs_parameters WHERE id_serv_secondaire = ?', [id], (err, results) => {
+      if (err) reject(err);
+      else resolve(!!results[0]?.id_serv_secondaire);
+    });
+  });
+}
+
+/*
+Table serveurs_roles {
+    id INT [pk, increment]
+    serveur_id INT [ref: > serveurs.id, not null]
+    utilisateur_id INT [ref: > utilisateurs_discord.id, not null]
+    methode ENUM('administrateur', 'investisseur') [not null]
+}
+*/
+
+function linkServerToInvestor(serverId, userId) {
+  return new Promise((resolve, reject) => {
+    connection.query('INSERT INTO serveurs_roles (serveur_id, utilisateur_id, methode) VALUES (?, ?, "investisseur")', [serverId, userId], (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
+  });
+}
+
+function linkServerToAdministrator(serverId, userId) {
+  return new Promise((resolve, reject) => {
+    connection.query('INSERT INTO serveurs_roles (serveur_id, utilisateur_id, methode) VALUES (?, ?, "administrateur")', [serverId, userId], (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
   });
 }
 
 module.exports = {
   connectToDB,
   closeConnection,
+  useDatabase,  
   getServerEmoji,
   getAllServers,
   getServerById,
-  getAllActiveServers,
-  getAllMinecraftServers,
-  getAllActiveMinecraftServers,
-  getServerPrimaire,
-  getServerSecondaire,
-  getServeurStatus,
   isServerActive,
   isServerGlobal,
-  startServer,
-  getRconParameters,
+  getServerPrimaire,
+  getServerSecondaire,
+  getPrimaryRconParameters,
+  getSecondaryRconParameters,
+  isServerPrimary,
+  isServerSecondary,
   linkServerToInvestor,
   linkServerToAdministrator
 };

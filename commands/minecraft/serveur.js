@@ -75,7 +75,7 @@ module.exports = {
 
         // Autres actions
         try {
-            const servers = await dbController.getAllActiveMinecraftServers();
+            const servers = await dbController.getAllServers(true, true, 'Minecraft');
             if (!servers || servers.length === 0) {
                 return interaction.reply({
                     content: 'Aucun serveur Minecraft actif trouvé.',

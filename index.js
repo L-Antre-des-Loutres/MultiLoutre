@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const {log_s, log_i, log_w, log_e, important_c, reset_c, error_c} = require('./color_code.json');
 
+const rconController = require(__dirname + '/utils/rconController');
+
 configPath = __dirname + '/config.json';
 if (!fs.existsSync(configPath)) {
   console.error(log_e + `Le fichier "${important_c}config.json${reset_c}" n'existe pas. Veuillez le créer en lançant le script ${important_c}./scripts/deploy-config.js${reset_c}.`);
@@ -54,6 +56,10 @@ for (const file of eventFiles) {
   }
   console.log(log_s + `Événement chargé : ${important_c}${file}${reset_c}`);
 }
+
+// Récupérons les parametres rcon
+result = rconController.sendRconCommand("primary", "list");
+console.log(result);
 
 // Connexion du bot
 console.log(log_i + 'Les commandes et événements ont été chargés. Connexion du bot...');

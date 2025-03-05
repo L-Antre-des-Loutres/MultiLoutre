@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
-const { bot_color } = require(__dirname + '/../../config.json');
+const { bot_color, global_db_name } = require(__dirname + '/../../config.json');
 const dbController = require(__dirname + '/../../utils/dbServeurController');
 const { log_i, log_s, log_e, error_c, reset_c, important_c } = require(__dirname + '/../../color_code.json');
 
@@ -19,7 +19,8 @@ module.exports = {
             .setTimestamp();
 
         try {
-            const servers = await dbController.getAllActiveMinecraftServers();
+            dbController.useDatabase(global_db_name);
+            const servers = await dbController.getAllServers(undefined, true, 'Minecraft');
 
             // Prépare la description et les champs de l'embed
             let serverListDescription = '[En savoir plus sur nos serveurs Minecraft](https://perdu.com).\nVoici la liste de nos serveurs Minecraft actuellement disponibles :';
