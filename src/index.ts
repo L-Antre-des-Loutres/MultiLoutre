@@ -28,7 +28,7 @@ try {
     })
 
 } catch (error) {
-    otterlogs.error("Erreur lors de l'initialisation des commandes slash :", error);
+    otterlogs.error("Erreur lors du chargement des commandes et des events:", error);
 }
 
 client.login(process.env.DISCORD_TOKEN);
