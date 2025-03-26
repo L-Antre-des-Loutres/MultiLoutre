@@ -2,6 +2,7 @@ import { Client } from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
 import { BotEvent } from "../../types";
+import otterlogs from "../../utils/otterlogs";
 
 module.exports = (client: Client) => {
     let eventsDir = join(__dirname, "../../events");
@@ -15,6 +16,6 @@ module.exports = (client: Client) => {
         ? client.once(event.name, (...args) => event.execute(...args))
         : client.on(event.name, (...args) => event.execute(...args))
 
-        console.log(`Event ${event.name} prêt ✔️`);
+        otterlogs.success(`Event "${event.name}" prêt (${file})`);
     })
 }

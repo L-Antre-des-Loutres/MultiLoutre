@@ -1,4 +1,5 @@
 import * as mysql from "mysql2/promise";
+import otterlogs from "../utils/otterlogs";
 
 export class Database {
     private readonly pool: mysql.Pool;
@@ -19,9 +20,9 @@ export class Database {
     async close() {
         try {
             await this.pool.end();  // Ferme le pool et libère toutes les connexions
-            console.log("Pool de connexions fermé.");
+            otterlogs.log("Pool de connexions fermé.");
         } catch (error) {
-            console.error("❌ Erreur lors de la fermeture du pool de connexions : ", error);
+            otterlogs.error("Erreur lors de la fermeture du pool de connexions : ", error);
         }
     }
 
@@ -31,7 +32,7 @@ export class Database {
             const [results, fields] = await this.pool.execute(query); 
             return { results, fields };
         } catch (error) {
-            console.error("❌ Erreur lors de la requête : ", error);
+            otterlogs.error("Erreur lors de la requête : ", error);
             return { results: [], fields: [] };
         }
     }
@@ -42,7 +43,7 @@ export class Database {
             const [results, fields] = await this.pool.execute(`SELECT * FROM ${table} WHERE ?`, values);
             return { results, fields };
         } catch (error) {
-            console.error("❌ Erreur lors de la sélection : ", error);
+            otterlogs.error("Erreur lors de la sélection : ", error);
             return { results: [], fields: [] };
         }
     }
@@ -57,7 +58,7 @@ export class Database {
             const [results, fields] = await this.pool.execute(sql, insertValues);
             return { results, fields };
         } catch (error) {
-            console.error("❌ Erreur lors de l'insertion : ", error);
+            otterlogs.error("Erreur lors de l'insertion : ", error);
             return { results: [], fields: [] };
         }
     }
@@ -73,7 +74,7 @@ export class Database {
             const [results, fields] = await this.pool.execute(sql, updateValues);
             return { results, fields };
         } catch (error) {
-            console.error("❌ Erreur lors de la mise à jour : ", error);
+            otterlogs.error("Erreur lors de la mise à jour : ", error);
             return { results: [], fields: [] };
         }
     }
@@ -89,7 +90,7 @@ export class Database {
             const [results, fields] = await this.pool.execute(sql, deleteValues);
             return { results, fields };
         } catch (error) {
-            console.error("❌ Erreur lors de la suppression : ", error);
+            otterlogs.error("Erreur lors de la suppression : ", error);
             return { results: [], fields: [] };
         }
     }

@@ -6,10 +6,13 @@ declare global {
             DISCORD_TOKEN: string;
             DISCORD_CLIENT_ID: string;
             DEV_SERVEUR: string;
+            BOT_COLOR: string;
+            VERSION: string;
+            
             GUILD_ID: string;
             CATEGORY_NAME: string;
-            WELCOME_CHANNEL: string;
-            WELCOME_ROLE: string;
+            ROLE_NAME: string;
+            
             DB_HOST: string;
             DB_USER: string;
             DB_PASSWORD: string;

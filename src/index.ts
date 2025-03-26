@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import { readdirSync } from "fs";
 import { join } from "path";
 import { SlashCommand } from "./types";
+import otterlogs from "./utils/otterlogs";
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ try {
     })
 
 } catch (error) {
-    console.error("Erreur lors de l'initialisation des commandes slash :", error);
+    otterlogs.error("Erreur lors de l'initialisation des commandes slash :", error);
 }
 
 client.login(process.env.DISCORD_TOKEN);

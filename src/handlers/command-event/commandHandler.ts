@@ -2,6 +2,7 @@ import { Client, REST, RESTPostAPIApplicationCommandsJSONBody, Routes } from "di
 import { readdirSync } from "fs";
 import { join } from "path";
 import { SlashCommand } from "../../types";
+import otterlogs from "../../utils/otterlogs";
 
 module.exports = async (client: Client) => {
     const body: RESTPostAPIApplicationCommandsJSONBody[] = [];
@@ -15,7 +16,7 @@ module.exports = async (client: Client) => {
 
             // Vérification que la commande possède bien la propriété 'data'
             if (!command || !command.data) {
-                console.error(`La commande dans le fichier ${file} ne contient pas de propriété 'data'.`);
+                otterlogs.error(`La commande dans le fichier ${file} ne contient pas de propriété 'data'.`);
                 return;
             }
 
@@ -23,7 +24,7 @@ module.exports = async (client: Client) => {
             body.push(command.data.toJSON());
             client.slashCommands.set(command.name, command);
         } catch (error) {
-            console.error(`Erreur lors du chargement de la commande ${file}:`, error);
+            otterlogs.error(`Erreur lors du chargement de la commande ${file}:`, error);
         }
     });
 
@@ -32,6 +33,6 @@ module.exports = async (client: Client) => {
     try {
         await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), { body: body });
     } catch (error) {
-        console.error('Erreur lors de l\'envoi des commandes à l\'API Discord:', error);
+        otterlogs.error('Erreur lors de l\'envoi des commandes à l\'API Discord:', error);
     }
 }

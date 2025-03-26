@@ -1,38 +1,41 @@
 import { Events, ChannelType, PermissionFlagsBits, Colors, Client, Guild } from "discord.js";
 import { BotEvent } from "../types";
+import otterlogs from "../utils/otterlogs";
 
 const event: BotEvent = {
   name: Events.ClientReady,
   once: true,
   async execute(client: Client) {
-    console.log(`✅ Ready! Logged in as ${client.user?.tag}`);
+    otterlogs.success(`Ready! Logged in as ${client.user?.tag}`);
     client.user?.setActivity("Minecraft");
 
-    // Noms des salons à créer
+    // Noms des salons à créer pour le fonctionnement de mineotter
     const channelNames: string[] = [
-      "🦦logs-global",
-      "🍜logs-edit-suppression",
-      "❌logs-erreur",
+      "🦦・logs-mineotter",
+      "❌・logs-erreur",
+      "🟩・mcmyadmin-primaire",
+      "🟩・mcmyadmin-secondaire",
+      "🔐・mcmyadmin-partenaire"
     ];
 
     // ID du serveur
     const guildId = process.env.GUILD_ID;
     if (!guildId) {
-      console.error("❌ GuildId non trouvée");
+      otterlogs.error("GuildId non trouvée");
       return;
     }
 
     // Nom de la catégorie
     const categoryName = process.env.CATEGORY_NAME;
     if (!categoryName) {
-      console.error("❌ CategoryName non trouvée");
+      otterlogs.error("CategoryName non trouvée");
       return;
     }
 
     // Nom du rôle
     const roleName = process.env.ROLE_NAME;
     if (!roleName) {
-      console.error("❌ RoleName non trouvée");
+      otterlogs.error("RoleName non trouvée");
       return;
     }
 
@@ -43,7 +46,7 @@ const event: BotEvent = {
       // Récupère la guild
       const guild: Guild | undefined = client.guilds.cache.get(guildId);
       if (!guild) {
-        console.error("❌ Guild non trouvée");
+        otterlogs.error("Guild non trouvée");
         return;
       }
 
@@ -61,9 +64,9 @@ const event: BotEvent = {
           color: Colors.Blue,
           reason: "Role spécifique pour la catégorie",
         });
-        console.log(`✅ Rôle "${roleName}" créé !`);
+        otterlogs.success(`Rôle "${roleName}" créé !`);
       } else {
-        console.log(`ℹ️  Le rôle "${roleName}" existe déjà`);
+        otterlogs.log(`Le rôle "${roleName}" existe déjà`);
       }
 
       // Vérifie si la catégorie existe déjà
@@ -74,7 +77,7 @@ const event: BotEvent = {
       );
 
       if (category) {
-        console.log(`ℹ️  La catégorie "${categoryName}" existe déjà`);
+        otterlogs.log(`La catégorie "${categoryName}" existe déjà`);
       } else {
         // Crée une catégorie avec les permissions pour le rôle spécifique
         category = await guild.channels.create({
@@ -91,13 +94,13 @@ const event: BotEvent = {
             },
           ],
         });
-        console.log(`✅ Catégorie "${categoryName}" créée avec les permissions !`);
+        otterlogs.success(`Catégorie "${categoryName}" créée avec les permissions !`);
       }
 
       // Crée des salons à l'intérieur de la catégorie avec les mêmes permissions
       for (const channelName of channelNames) {
         if (channelsDiscord.includes(channelName)) {
-          console.log(`ℹ️  Le salon "${channelName}" existe déjà`);
+          otterlogs.log(`Le salon "${channelName}" existe déjà`);
         } else {
           await guild.channels.create({
             name: channelName,
@@ -114,11 +117,11 @@ const event: BotEvent = {
               },
             ],
           });
-          console.log(`✅ Salon "${channelName}" créé !`);
+          otterlogs.success(`Salon "${channelName}" créé !`);
         }
       }
     } catch (error) {
-      console.error(`❌ Erreur lors de la création des salons : ${error}`);
+      otterlogs.error(`Erreur lors de la création des salons : ${error}`);
     }
   },
 };
