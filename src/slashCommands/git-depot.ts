@@ -1,11 +1,13 @@
 import { SlashCommandBuilder, EmbedBuilder, CommandInteraction, Client, ColorResolvable } from 'discord.js';
+import { SlashCommand } from '../types';
 
-export const command = {
+export const command: SlashCommand =  {
+    name: 'git-depot',
     data: new SlashCommandBuilder()
         .setName('git-depot')
         .setDescription('Renvoi le lien du dépôt GitHub de Mineotter.'),
 
-    async execute(interaction: CommandInteraction, client: Client): Promise<void> {
+    execute: async (interaction: CommandInteraction) => {
         // Récupération de BOT_COLOR et VERSION depuis .env
         let bot_color: string;
         let version: string;

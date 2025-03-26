@@ -1,4 +1,5 @@
 import { Events, ChannelType, PermissionFlagsBits, Colors, Client, Guild } from "discord.js";
+import * as fs from "fs";
 import { BotEvent } from "../types";
 import otterlogs from "../utils/otterlogs";
 
@@ -119,11 +120,42 @@ const event: BotEvent = {
           });
           otterlogs.success(`Salon "${channelName}" créé !`);
         }
+        if (channelName.includes("logs-mineotter") || channelName.includes("logs-erreur")) {
+          let envVarName = "";
+          switch (channelName) {
+            case "🦦・logs-mineotter":
+              envVarName = "GLOBAL_LOGS";
+              break;
+            case "❌・logs-erreur":
+              envVarName = "ERROR_LOGS";
+              break;
+          }
+
+          try {
+            const channel = guild.channels.cache.find((ch) => ch.name === channelName);
+            if (channel) {
+              // Mettre à jour le fichier .env
+              const envFilePath = ".env";
+              const envFileContent = fs.readFileSync(envFilePath, "utf8");
+
+              // Vérifier si la variable existe déjà et la remplacer, sinon l'ajouter
+              const newEnvContent = envFileContent.includes(envVarName)
+                ? envFileContent.replace(new RegExp(`^${envVarName}=.*`, "m"), `${envVarName}=${channel.id}`)
+                : envFileContent + `\n${envVarName}=${channel.id}`;
+
+              fs.writeFileSync(envFilePath, newEnvContent, "utf8");
+
+              otterlogs.success(`ID du salon "${channelName}" (${channel.id}) enregistré dans le .env sous "${envVarName}".`);
+            }
+          } catch (error) {
+            otterlogs.error(`Erreur lors de l'enregistrement de l'ID du salon "${channelName}" dans le .env :`, error);
+          }
+        }
       }
     } catch (error) {
-      otterlogs.error(`Erreur lors de la création des salons : ${error}`);
+      otterlogs.error(`Erreur lors de la création de la catégorie, des salons et du rôle :`, error);
     }
-  },
+  }
 };
 
 export default event;
