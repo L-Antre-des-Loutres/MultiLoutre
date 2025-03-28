@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, EmbedBuilder, CommandInteraction, StringSelectMenuBuilder, ActionRowBuilder, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, CommandInteraction } from 'discord.js';
 import { SlashCommand } from '../types';
+import { ApiController } from "../database/apiController";
 import axios from 'axios';
 import otterlogs from "../utils/otterlogs";
 
@@ -10,12 +11,21 @@ export const command: SlashCommand = {
         .setDescription('Permet de lancer le serveur CripieClub. (La commande changera bientôt, celle-ci est temporaire)'),
     execute: async (interaction: CommandInteraction) => {
         otterlogs.log("Lancement du serveur CripieClub.");
-        // Url : https://api.antredesloutres.fr/serveurs/start/ : POST
-        // Body : { "client_token": "API_TOKEN", "id_serv": 19 }
+        const apiController = new ApiController() || "jsp"
+        let routeData = await apiController.getRouteByAlias("Start-Serveur"); // Ensure correct alias case
+        if (!routeData || !routeData.route) {
+            otterlogs.error("URL de démarrage du serveur introuvable ! Appeler dans la commande de lancement de serveur.");
+            await interaction.reply({
+                content: "Erreur : Impossible de trouver l'URL de démarrage du serveur.",
+                ephemeral: true
+            });
+            return;
+        }
+        let startserv_url: string = routeData.route;
         let client_token = process.env.API_TOKEN;
         let id_serv = 19;
         
-        const response = await axios.post('https://api.antredesloutres.fr/serveurs/start/', {
+        const response = await axios.post(startserv_url, {
             client_token: client_token,
             id_serv: id_serv
         }, {
