@@ -22,6 +22,7 @@ module.exports = async (client: Client) => {
 
             // Si tout est bon, ajoute la commande à la liste
             body.push(command.data.toJSON());
+            otterlogs.success(`Commande ${command.name} chargée avec succès !`);
             client.slashCommands.set(command.name, command);
         } catch (error) {
             otterlogs.error(`Erreur lors du chargement de la commande ${file}:`, error);
