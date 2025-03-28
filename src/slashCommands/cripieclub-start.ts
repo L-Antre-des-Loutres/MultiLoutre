@@ -11,8 +11,8 @@ export const command: SlashCommand = {
         .setDescription('Permet de lancer le serveur CripieClub. (La commande changera bientôt, celle-ci est temporaire)'),
     execute: async (interaction: CommandInteraction) => {
         otterlogs.log("Lancement du serveur CripieClub.");
-        const apiController = new ApiController() || "jsp"
-        let routeData = await apiController.getRouteByAlias("Start-Serveur"); // Ensure correct alias case
+        const apiController = new ApiController() || ""
+        let routeData = await apiController.getRouteByAlias("start-Serveur")
         if (!routeData || !routeData.route) {
             otterlogs.error("URL de démarrage du serveur introuvable ! Appeler dans la commande de lancement de serveur.");
             await interaction.reply({
@@ -22,12 +22,12 @@ export const command: SlashCommand = {
             return;
         }
         let startserv_url: string = routeData.route;
-        let client_token = process.env.API_TOKEN;
-        let id_serv = 19;
+        let tokenAPI = process.env.API_TOKEN;
+        let serveurId = 19;
         
         const response = await axios.post(startserv_url, {
-            client_token: client_token,
-            id_serv: id_serv
+            client_token: tokenAPI,
+            id_serv: serveurId
         }, {
             headers: { 'Content-Type': 'application/json' }
         });

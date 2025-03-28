@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder, CommandInteraction, StringSelectMenuBuilder, ActionRowBuilder, MessageFlags, ColorResolvable } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, CommandInteraction, StringSelectMenuBuilder, ActionRowBuilder, ColorResolvable, Interaction } from 'discord.js';
 import { SlashCommand } from '../types';
 import { ServeursDatabase } from "../database/serveursController";
 import otterlogs from "../utils/otterlogs";
@@ -20,7 +20,6 @@ export const command: SlashCommand = {
         ),
     execute: async (interaction: CommandInteraction) => {
         const action = interaction.options.get('action')?.value as string;
-        otterlogs.log("Commande /serveur exécutée avec l'action : " + action);
         const db = new ServeursDatabase();
         const serveurPrimaire = await db.getServeurById(1);
         const serveurSecondaire = await db.getServeurById(2);
@@ -31,15 +30,15 @@ export const command: SlashCommand = {
             await interaction.reply({
                 content: "Cette action n'est pas encore implémentée.",
                 ephemeral: true
-            });  
-            return 
+            });
+            return;
         } else if (action === 'infos') {
             embedTitle = "Choisissez un serveur pour afficher ses informations";
         } else if (action === 'lancer') {
             embedTitle = "Choisissez un serveur à démarrer";
         }
 
-        // Pour les autre actions on va utiliser un select menu
+        // Pour les autres actions on va utiliser un select menu
         const serveursList = await db.getAllServeurs();
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('serveur_select')
@@ -48,14 +47,14 @@ export const command: SlashCommand = {
                 serveursList.results.map(serveur => {
                     let isModdedText = "Serveur Moddé : Inconnu";
                     if (serveur.modpack && serveur.modpack.includes("Minecraft Vanilla")) {
-                        isModdedText = "Serveur Vanilla"; 
+                        isModdedText = "Serveur Vanilla";
                     } else {
                         isModdedText = "Serveur Moddé : " + serveur.modpack;
                     }
-        
+
                     return {
                         label: serveur.nom,
-                        value: serveur.id.toString(),
+                        value: `${serveur.id.toString()}|${action}|${interaction.user.id}`,
                         description: `${serveur.version} - ${isModdedText}`,
                     };
                 })
@@ -74,8 +73,7 @@ export const command: SlashCommand = {
         await interaction.reply({
             content: "Sélectionnez un serveur dans le menu déroulant ci-dessous.",
             embeds: [embed],
-            components: [row],
-            ephemeral: true
+            components: [row]
         });
     }
 };

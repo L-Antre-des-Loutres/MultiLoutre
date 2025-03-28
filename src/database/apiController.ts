@@ -18,7 +18,7 @@ export class ApiController {
 
     async getRouteByAlias(alias: string) {
         try {
-            const sql = "SELECT * FROM api_route WHERE alias = ? LIMIT 1";
+            const sql = "SELECT * FROM api_routes WHERE alias = ? LIMIT 1";
             const [results] = await this.pool.execute<mysql.RowDataPacket[]>(sql, [alias]);
             return results.length > 0 ? results[0] : null;
         } catch (error) {
