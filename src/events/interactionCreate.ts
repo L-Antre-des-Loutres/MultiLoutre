@@ -87,8 +87,38 @@ const event: BotEvent = {
                         otterlogs.error("Erreur lors de la mise à jour du message : ", error);
                     });
                 } else if (action === 'infos') {
+                    const embed = {
+                        title: `Informations sur le serveur ${selectedServer.results[0].nom}`,
+                        description: `Voici les informations sur le serveur ${selectedServer.results[0].nom}.`,
+                        color: parseInt(selectedServer.results[0].embed_color.replace('#', ''), 16),
+                        fields: [
+                            {
+                                name: "Jeu",
+                                value: selectedServer.results[0].jeu,
+                                inline: true
+                            },
+                            {
+                                name: "Version",
+                                value: selectedServer.results[0].version,
+                                inline: true
+                            },
+                            {
+                                name: "Modpack",
+                                value: `[${selectedServer.results[0].modpack}](${selectedServer.results[0].modpack_url})`,
+                                inline: true
+                            }
+                        ],
+                        footer: {
+                            text: "Mineotter",
+                            icon_url: interaction.client.user?.displayAvatarURL() || '',
+                        },
+                        timestamp: new Date().toISOString()
+                    };
+
                     await interaction.update({
-                        content: "Cette action n'est pas encore implémentée."
+                        embeds: [embed]
+                    }).catch(error => {
+                        otterlogs.error("Erreur lors de la mise à jour du message : ", error);
                     });
                 }
             }
