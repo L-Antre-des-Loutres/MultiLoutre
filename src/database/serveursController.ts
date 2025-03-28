@@ -2,7 +2,8 @@ import * as mysql from "mysql2/promise";
 import otterlogs from "../utils/otterlogs";
 
 type Serveur = {
-    id?: number;
+    name: any;
+    id: number;
     nom: string;
     jeu: string;
     version: string;

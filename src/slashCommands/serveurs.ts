@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder, CommandInteraction, StringSelectMenuBuilder, ActionRowBuilder, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, CommandInteraction, StringSelectMenuBuilder, ActionRowBuilder, MessageFlags, ColorResolvable } from 'discord.js';
 import { SlashCommand } from '../types';
 import { ServeursDatabase } from "../database/serveursController";
 import otterlogs from "../utils/otterlogs";
@@ -19,15 +19,62 @@ export const command: SlashCommand = {
                 )
         ),
     execute: async (interaction: CommandInteraction) => {
-        otterlogs.log("Commande /serveur exécutée.");
+        const action = interaction.options.get('action')?.value as string;
+        otterlogs.log("Commande /serveur exécutée avec l'action : " + action);
         const db = new ServeursDatabase();
         const serveurPrimaire = await db.getServeurById(1);
         const serveurSecondaire = await db.getServeurById(2);
 
+        let embedTitle = "";
+        if (action === 'check') {
+            // Not implemented yet
+            await interaction.reply({
+                content: "Cette action n'est pas encore implémentée.",
+                ephemeral: true
+            });  
+            return 
+        } else if (action === 'infos') {
+            embedTitle = "Choisissez un serveur pour afficher ses informations";
+        } else if (action === 'lancer') {
+            embedTitle = "Choisissez un serveur à démarrer";
+        }
+
+        // Pour les autre actions on va utiliser un select menu
+        const serveursList = await db.getAllServeurs();
+        const selectMenu = new StringSelectMenuBuilder()
+            .setCustomId('serveur_select')
+            .setPlaceholder('Sélectionnez un serveur')
+            .addOptions(
+                serveursList.results.map(serveur => {
+                    let isModdedText = "Serveur Moddé : Inconnu";
+                    if (serveur.modpack && serveur.modpack.includes("Minecraft Vanilla")) {
+                        isModdedText = "Serveur Vanilla"; 
+                    } else {
+                        isModdedText = "Serveur Moddé : " + serveur.modpack;
+                    }
+        
+                    return {
+                        label: serveur.nom,
+                        value: serveur.id.toString(),
+                        description: `${serveur.version} - ${isModdedText}`,
+                    };
+                })
+            );
+        const row = new ActionRowBuilder<StringSelectMenuBuilder>()
+            .addComponents(selectMenu);
+        const embed = new EmbedBuilder()
+            .setTitle(embedTitle)
+            .setDescription("Sélectionnez un serveur dans le menu déroulant ci-dessous.")
+            .setColor(process.env.BOT_COLOR as ColorResolvable || "#FFFFFF")
+            .setFooter({
+                text: "Mineotter",
+                iconURL: interaction.client.user?.displayAvatarURL() || '',
+            })
+            .setTimestamp();
         await interaction.reply({
-            content: `Voici les informations sur les serveurs Minecraft :\n
-            Serveur primaire : ${serveurPrimaire.results[0].nom}\n
-            Serveur secondaire : ${serveurSecondaire.results[0].nom}`,
+            content: "Sélectionnez un serveur dans le menu déroulant ci-dessous.",
+            embeds: [embed],
+            components: [row],
             ephemeral: true
         });
     }
