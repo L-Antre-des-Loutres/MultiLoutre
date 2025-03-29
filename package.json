@@ -23,7 +23,8 @@
     "axios": "^1.8.4",
     "discord.js": "^14.15.2",
     "dotenv": "^16.4.7",
-    "mysql2": "^3.13.0"
+    "mysql2": "^3.13.0",
+    "rcon-client": "^4.2.5"
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",

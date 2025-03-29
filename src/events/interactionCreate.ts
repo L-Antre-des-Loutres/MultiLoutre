@@ -23,7 +23,7 @@ const event: BotEvent = {
             // Gère les interactions de sélection de serveurs
             if (interaction.isStringSelectMenu() && interaction.customId === 'serveur_select') {
                 const [selectedServerId, action, utilisateurId] = interaction.values[0].split('|');
-                if ((interaction.user.id !== utilisateurId || interaction.user.id == "383676607434457088") && interaction.user.id !== "518780404057112580") {
+                if (interaction.user.id !== utilisateurId) {
                     return interaction.reply({ content: "Cette sélection ne t'appartient pas ! <a:mineotter:1355287083559944282>", ephemeral: true });
                 }
                 const db = new ServeursDatabase();

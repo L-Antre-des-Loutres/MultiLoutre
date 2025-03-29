@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, CommandInteraction, StringSelectMenuBuilder, ActionRowBuilder, ColorResolvable, Interaction } from 'discord.js';
 import { SlashCommand } from '../types';
 import { ServeursDatabase } from "../database/serveursController";
-import otterlogs from "../utils/otterlogs";
 
 export const command: SlashCommand = {
     name: 'serveur',
@@ -39,7 +38,7 @@ export const command: SlashCommand = {
         }
 
         // Pour les autres actions on va utiliser un select menu
-        const serveursList = await db.getAllServeurs();
+        const serveursList = await db.getAllGlobalActifServeurs();
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('serveur_select')
             .setPlaceholder('Sélectionnez un serveur')

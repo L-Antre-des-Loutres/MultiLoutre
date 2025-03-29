@@ -56,7 +56,19 @@ export class ServeursDatabase {
     }
 
     async getAllServeurs(): Promise<{ results: Serveur[]; fields: mysql.FieldPacket[] }> {
-        return this.query<Serveur>("SELECT * FROM serveurs");
+        return this.query<Serveur>("SELECT * FROM serveurs WHERE jeu = 'Minecraft'");
+    }
+
+    async getAllGlobalServeurs(): Promise<{ results: Serveur[]; fields: mysql.FieldPacket[] }> {
+        return this.query<Serveur>("SELECT * FROM serveurs WHERE jeu = 'Minecraft' AND global = 1");
+    }
+
+    async getAllActifServeurs(): Promise<{ results: Serveur[]; fields: mysql.FieldPacket[] }> {
+        return this.query<Serveur>("SELECT * FROM serveurs WHERE jeu = 'Minecraft' AND actif = 1");
+    }
+
+    async getAllGlobalActifServeurs(): Promise<{ results: Serveur[]; fields: mysql.FieldPacket[] }> {
+        return this.query<Serveur>("SELECT * FROM serveurs WHERE jeu = 'Minecraft' AND actif = 1 AND global = 1");
     }
 
     async insertServeur(values: Omit<Serveur, "id">): Promise<{ results: mysql.OkPacket; fields: mysql.FieldPacket[] }> {

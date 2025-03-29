@@ -12,6 +12,8 @@ const event: BotEvent = {
 
     // Noms des salons à créer pour le fonctionnement de mineotter
     const channelNames: string[] = [
+      "🌌・discu-mc",
+      "🌌・chat-mc-partenaire", // Attention à ne pas avoir deux fois le même nom de salon ! Aussi, quand celui la doit être remplacé, il ne faut pas oublier de changer les 2 instances.
       "🦦・logs-mineotter",
       "❌・logs-erreur",
       "🟩・mcmyadmin-primaire",
@@ -120,9 +122,15 @@ const event: BotEvent = {
           });
           otterlogs.success(`Salon "${channelName}" créé !`);
         }
-        if (channelName.includes("logs-mineotter") || channelName.includes("logs-erreur")) {
+        if (channelName.includes("discu-mc") || channelName.includes("partenaire") || channelName.includes("logs-mineotter") || channelName.includes("logs-erreur")) {
           let envVarName = "";
           switch (channelName) {
+            case "🌌・discu-mc":
+              envVarName = "DISCU_MC";
+              break;
+            case "🌌・chat-mc-partenaire":
+              envVarName = "DISCU_MC_PARTENAIRE";
+              break;
             case "🦦・logs-mineotter":
               envVarName = "GLOBAL_LOGS";
               break;
@@ -145,7 +153,7 @@ const event: BotEvent = {
 
               fs.writeFileSync(envFilePath, newEnvContent, "utf8");
 
-              otterlogs.success(`ID du salon "${channelName}" (${channel.id}) enregistré dans le .env sous "${envVarName}".`);
+              otterlogs.success(`ID du salon "${channelName}" (${channel.id}) enregistré dans le .env !`);
             }
           } catch (error) {
             otterlogs.error(`Erreur lors de l'enregistrement de l'ID du salon "${channelName}" dans le .env :`, error);
@@ -155,6 +163,12 @@ const event: BotEvent = {
     } catch (error) {
       otterlogs.error(`Erreur lors de la création de la catégorie, des salons et du rôle :`, error);
     }
+
+    // Check la config Rcon
+    const rconPrimaire = process.env.ENABLE_PRIMARY_SERVER_RCON;
+    const rconSecondaire = process.env.ENABLE_SECONDARY_SERVER_RCON;
+    const rconPartenaire = process.env.ENABLE_PARTENAIRE_SERVER_RCON;
+    otterlogs.log(`RCON Primaire = ${rconPrimaire}, RCON Secondaire = ${rconSecondaire}, RCON Partenaire = ${rconPartenaire}`);
   }
 };
 
