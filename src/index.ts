@@ -28,7 +28,7 @@ try {
     })
 
 } catch (error) {
-    otterlogs.error("Erreur lors du chargement des commandes et des events:", error);
+    otterlogs.error(`Erreur lors du chargement des commandes et des events : ${error}`);
 }
 
 client.login(process.env.DISCORD_TOKEN);

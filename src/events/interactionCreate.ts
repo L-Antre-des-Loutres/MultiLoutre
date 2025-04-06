@@ -123,7 +123,7 @@ const event: BotEvent = {
                 }
             }
         } catch (error) {
-            otterlogs.error("Erreur lors de l'exécution de l'interaction:", error);
+            otterlogs.error("Erreur lors de l'exécution de l'interaction:");
             if (interaction.isChatInputCommand()) {
                 interaction.reply({ content: "Une erreur est survenue lors de l'exécution de la commande.", ephemeral: true });
             }

@@ -25,7 +25,7 @@ module.exports = async (client: Client) => {
             otterlogs.success(`Commande ${command.name} chargée avec succès !`);
             client.slashCommands.set(command.name, command);
         } catch (error) {
-            otterlogs.error(`Erreur lors du chargement de la commande ${file}:`, error);
+            otterlogs.error(`Erreur lors du chargement de la commande ${file} : ${error}`);
         }
     });
 
@@ -34,6 +34,6 @@ module.exports = async (client: Client) => {
     try {
         await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), { body: body });
     } catch (error) {
-        otterlogs.error('Erreur lors de l\'envoi des commandes à l\'API Discord:', error);
+        otterlogs.error(`Erreur lors de l\'envoi des commandes à l\'API Discord : ${error}`);
     }
 }
