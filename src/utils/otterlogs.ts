@@ -14,25 +14,25 @@ const otterlogs = {
   success: (message: string, client?: Client): void => {
     console.log(logStyles.success, message);
     if (client) {
-      sendLogMessage(client, message, false);
+      sendLogMessage(client, message, false, "success");
     }
   },
   log: (message: string, client?: Client): void => {
     console.log(logStyles.info, message);
     if (client) {
-      sendLogMessage(client, message, false);
+      sendLogMessage(client, message, false, "log");
     }
   },
   warn: (message: string, client?: Client): void => {
     console.warn(logStyles.warn, message);
     if (client) {
-      sendLogMessage(client, message, false);
+      sendLogMessage(client, message, false, "warn");
     }
   },
   error: (message: string, client?: Client): void => {
     console.error(logStyles.error, message);
     if (client) {
-      sendLogMessage(client, message, true);
+      sendLogMessage(client, message, true, "error");
     }
   },
   important: (message: string): void => {
