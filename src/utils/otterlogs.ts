@@ -1,4 +1,4 @@
-import { Client, TextChannel } from "discord.js";
+import { Client, TextChannel, WebhookClient } from "discord.js";
 
 const logStyles = {
   success: "\u001b[32m[success]\u001b[0m",
@@ -11,29 +11,21 @@ const logStyles = {
 };
 
 const otterlogs = {
-  success: (message: string, client?: Client): void => {
+  success: (message: string): void => {
     console.log(logStyles.success, message);
-    if (client) {
-      sendLogMessage(client, message, false, "success");
-    }
+      sendLogMessage(message, false, "success");
   },
-  log: (message: string, client?: Client): void => {
+  log: (message: string): void => {
     console.log(logStyles.info, message);
-    if (client) {
-      sendLogMessage(client, message, false, "log");
-    }
+      sendLogMessage(message, false, "log");
   },
-  warn: (message: string, client?: Client): void => {
+  warn: (message: string): void => {
     console.warn(logStyles.warn, message);
-    if (client) {
-      sendLogMessage(client, message, false, "warn");
-    }
+      sendLogMessage(message, false, "warn");
   },
-  error: (message: string, client?: Client): void => {
+  error: (message: string): void => {
     console.error(logStyles.error, message);
-    if (client) {
-      sendLogMessage(client, message, true, "error");
-    }
+      sendLogMessage(message, true, "error");
   },
   important: (message: string): void => {
     console.log(`${logStyles.importantColor}${message}${logStyles.resetColor}`);
@@ -41,33 +33,27 @@ const otterlogs = {
 };
 
 // Fonction pour envoyer un message dans le salon de logs
-function sendLogMessage(client: Client, message: string, error: boolean, type?: string): void {
+function sendLogMessage(message: string, error: boolean, type?: string): void {
   if (process.env.ENABLE_DISCORD_SUCCESS === "false" && type === "success") return;
   if (process.env.ENABLE_DISCORD_LOGS === "false" && type === "log") return;
   if (process.env.ENABLE_DISCORD_WARNS === "false" && type === "warn") return;
   if (process.env.ENABLE_DISCORD_ERRORS === "false" && type === "error") return;
-  if (!process.env.GLOBAL_LOGS && !process.env.ERROR_LOGS) {
-    console.error(logStyles.error, "Les salons de logs ne sont pas définis dans le fichier .env !");
+
+  const webhookURL = error ? process.env.ERROR_WEBHOOK_URL : process.env.GLOBAL_WEBHOOK_URL;
+
+  if (!webhookURL) {
+    console.error(logStyles.error, "Webhook URL non définie dans le fichier .env !");
     return;
   }
 
-  let channel: TextChannel;
-  if (!error) {
-    channel = client.channels.cache.get(process.env.GLOBAL_LOGS as string) as TextChannel;
-  } else {
-    channel = client.channels.cache.get(process.env.ERROR_LOGS as string) as TextChannel;
-  }
+  const webhookClient = new WebhookClient({ url: webhookURL });
 
-  if (!channel) {
-    console.error(logStyles.error, "Le salon de logs n'a pas été trouvé !");
-    return;
-  }
-  if (error) {
-    console.error(logStyles.error, message);
-  } else {
-    channel.send(message);
-  }
+  webhookClient.send({
+    content: message,
+    username: `OtterLogger - ${type?.toUpperCase()}`,
+  }).catch((err) => {
+    console.error(logStyles.error, "Erreur lors de l'envoi du message via webhook:", err);
+  });
 }
-
 
 export default otterlogs;

@@ -7,7 +7,7 @@ const event: BotEvent = {
   name: Events.ClientReady,
   once: true,
   async execute(client: Client) {
-    otterlogs.success(`Ready! Logged in as ${client.user?.tag}`, client);
+    otterlogs.success(`Ready! Logged in as ${client.user?.tag}`);
     client.user?.setActivity("Minecraft");
 
     // Noms des salons à créer pour le fonctionnement de mineotter
@@ -24,21 +24,21 @@ const event: BotEvent = {
     // ID du serveur
     const guildId = process.env.GUILD_ID;
     if (!guildId) {
-      otterlogs.error("GuildId non trouvée", client);
+      otterlogs.error("GuildId non trouvée");
       return;
     }
 
     // Nom de la catégorie
     const categoryName = process.env.CATEGORY_NAME;
     if (!categoryName) {
-      otterlogs.error("CategoryName non trouvée", client);
+      otterlogs.error("CategoryName non trouvée");
       return;
     }
 
     // Nom du rôle
     const roleName = process.env.ROLE_NAME;
     if (!roleName) {
-      otterlogs.error("RoleName non trouvée", client);
+      otterlogs.error("RoleName non trouvée");
       return;
     }
 
@@ -49,7 +49,7 @@ const event: BotEvent = {
       // Récupère la guild
       const guild: Guild | undefined = client.guilds.cache.get(guildId);
       if (!guild) {
-        otterlogs.error("Guild non trouvée", client);
+        otterlogs.error("Guild non trouvée");
         return;
       }
 
@@ -67,9 +67,9 @@ const event: BotEvent = {
           color: Colors.Blue,
           reason: "Role spécifique pour la catégorie",
         });
-        otterlogs.success(`Rôle "${roleName}" créé !`, client);
+        otterlogs.success(`Rôle "${roleName}" créé !`);
       } else {
-        otterlogs.log(`Le rôle "${roleName}" existe déjà`, client);
+        otterlogs.log(`Le rôle "${roleName}" existe déjà`);
       }
 
       // Vérifie si la catégorie existe déjà
@@ -80,7 +80,7 @@ const event: BotEvent = {
       );
 
       if (category) {
-        otterlogs.log(`La catégorie "${categoryName}" existe déjà`, client);
+        otterlogs.log(`La catégorie "${categoryName}" existe déjà`);
       } else {
         // Crée une catégorie avec les permissions pour le rôle spécifique
         category = await guild.channels.create({
@@ -97,13 +97,13 @@ const event: BotEvent = {
             },
           ],
         });
-        otterlogs.success(`Catégorie "${categoryName}" créée avec les permissions !`, client);
+        otterlogs.success(`Catégorie "${categoryName}" créée avec les permissions !`);
       }
 
       // Crée des salons à l'intérieur de la catégorie avec les mêmes permissions
       for (const channelName of channelNames) {
         if (channelsDiscord.includes(channelName)) {
-          otterlogs.log(`Le salon "${channelName}" existe déjà`, client);
+          otterlogs.log(`Le salon "${channelName}" existe déjà`);
         } else {
           await guild.channels.create({
             name: channelName,
@@ -120,7 +120,7 @@ const event: BotEvent = {
               },
             ],
           });
-          otterlogs.success(`Salon "${channelName}" créé !`, client);
+          otterlogs.success(`Salon "${channelName}" créé !`);
         }
         if (channelName.includes("discu-mc") || channelName.includes("partenaire") || channelName.includes("logs-mineotter") || channelName.includes("logs-erreur")) {
           let envVarName = "";
@@ -153,15 +153,15 @@ const event: BotEvent = {
 
               fs.writeFileSync(envFilePath, newEnvContent, "utf8");
 
-              otterlogs.success(`ID du salon "${channelName}" (${channel.id}) enregistré dans le .env !`, client);
+              otterlogs.success(`ID du salon "${channelName}" (${channel.id}) enregistré dans le .env !`);
             }
           } catch (error) {
-            otterlogs.error(`Erreur lors de l'enregistrement de l'ID du salon "${channelName}" dans le .env : ${error}`, client);
+            otterlogs.error(`Erreur lors de l'enregistrement de l'ID du salon "${channelName}" dans le .env : ${error}`);
           }
         }
       }
     } catch (error) {
-      otterlogs.error(`Erreur lors de la création de la catégorie, des salons et du rôle : ${error}`, client);
+      otterlogs.error(`Erreur lors de la création de la catégorie, des salons et du rôle : ${error}`);
     }
 
     // Check la config Rcon
