@@ -37,7 +37,7 @@ export class ServeursDatabase {
             await this.pool.end();
             otterlogs.log("Pool de connexions fermé.");
         } catch (error) {
-            otterlogs.error("Erreur lors de la fermeture du pool de connexions :", error);
+            otterlogs.error(`Erreur lors de la fermeture du pool de connexions : ${error}`);
         }
     }
 
@@ -46,7 +46,7 @@ export class ServeursDatabase {
             const [results, fields] = await this.pool.execute<mysql.RowDataPacket[]>(query, values);
             return { results: results as T[], fields };
         } catch (error) {
-            otterlogs.error("Erreur lors de la requête :", error);
+            otterlogs.error(`Erreur lors de la requête : ${error}`);
             return { results: [], fields: [] };
         }
     }
@@ -80,7 +80,7 @@ export class ServeursDatabase {
             const [results, fields] = await this.pool.execute<mysql.OkPacket>(sql, insertValues);
             return { results, fields };
         } catch (error) {
-            otterlogs.error("Erreur lors de l'insertion du serveur :", error);
+            otterlogs.error(`Erreur lors de l'insertion du serveur : ${error}`);
             return { results: {} as mysql.OkPacket, fields: [] };
         }
     }
@@ -93,7 +93,7 @@ export class ServeursDatabase {
             const [results, fields] = await this.pool.execute<mysql.OkPacket>(sql, [...updateValues, id]);
             return { results, fields };
         } catch (error) {
-            otterlogs.error("Erreur lors de la mise à jour du serveur :", error);
+            otterlogs.error(`Erreur lors de la mise à jour du serveur : ${error}`);
             return { results: {} as mysql.OkPacket, fields: [] };
         }
     }
@@ -104,7 +104,7 @@ export class ServeursDatabase {
             const [results, fields] = await this.pool.execute<mysql.OkPacket>(sql, [id]);
             return { results, fields };
         } catch (error) {
-            otterlogs.error("Erreur lors de la suppression du serveur :", error);
+            otterlogs.error(`Erreur lors de la suppression du serveur : ${error}`);
             return { results: {} as mysql.OkPacket, fields: [] };
         }
     }

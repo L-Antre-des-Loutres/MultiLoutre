@@ -38,7 +38,7 @@ export default {
               await (rcon_primaire).send(message_to_send);
               await (rcon_primaire).end();
             } catch (error) {
-              otterlogs.error('Failed to send message to primary server:', error);
+              otterlogs.error(`Failed to send message to primary server : ${error}`);
             }
           }
 
@@ -56,7 +56,7 @@ export default {
               await (rcon_secondaire).send(message_to_send);
               await (rcon_secondaire).end();
             } catch (error) {
-              otterlogs.error('Failed to send message to secondary server:', error);
+              otterlogs.error(`Failed to send message to secondary server : ${error}`);
             }
           }
         break;
@@ -75,7 +75,7 @@ export default {
               await (rcon_partenaire).send(message_to_send);
               await (rcon_partenaire).end();
             } catch (error) {
-              otterlogs.error('Failed to send message to secondary server:', error);
+              otterlogs.error(`Failed to send message to secondary server : ${error}`);
             }
           }
         break;

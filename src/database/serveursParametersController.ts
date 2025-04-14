@@ -22,7 +22,7 @@ export class ServeurParametersController {
             const [results] = await this.pool.execute<mysql.RowDataPacket[]>(sql);
             return results.length > 0 ? results[0][column] : null;
         } catch (error) {
-            otterlogs.error(`Erreur lors de la récupération de ${column} :`, error);
+            otterlogs.error(`Erreur lors de la récupération de ${column} : ${error}`);
             return null;
         }
     }

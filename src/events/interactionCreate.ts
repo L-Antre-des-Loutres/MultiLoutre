@@ -84,7 +84,7 @@ const event: BotEvent = {
                         content: "Le serveur a été démarré avec succès.",
                         components: []
                     }).catch(error => {
-                        otterlogs.error("Erreur lors de la mise à jour du message : ", error);
+                        otterlogs.error(`Erreur lors de la mise à jour du message : ${error}`);
                     });
                 } else if (action === 'infos') {
                     const embed = {
@@ -118,12 +118,12 @@ const event: BotEvent = {
                     await interaction.update({
                         embeds: [embed]
                     }).catch(error => {
-                        otterlogs.error("Erreur lors de la mise à jour du message : ", error);
+                        otterlogs.error(`Erreur lors de la mise à jour du message : ${error}`);
                     });
                 }
             }
         } catch (error) {
-            otterlogs.error("Erreur lors de l'exécution de l'interaction:", error);
+            otterlogs.error("Erreur lors de l'exécution de l'interaction:");
             if (interaction.isChatInputCommand()) {
                 interaction.reply({ content: "Une erreur est survenue lors de l'exécution de la commande.", ephemeral: true });
             }

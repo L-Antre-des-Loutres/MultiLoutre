@@ -22,7 +22,7 @@ export class ApiController {
             const [results] = await this.pool.execute<mysql.RowDataPacket[]>(sql, [alias]);
             return results.length > 0 ? results[0] : null;
         } catch (error) {
-            otterlogs.error("Erreur lors de la récupération de la route API :", error);
+            otterlogs.error(`Erreur lors de la récupération de la route API : ${error}`);
             return null;
         }
     }

@@ -156,12 +156,12 @@ const event: BotEvent = {
               otterlogs.success(`ID du salon "${channelName}" (${channel.id}) enregistré dans le .env !`);
             }
           } catch (error) {
-            otterlogs.error(`Erreur lors de l'enregistrement de l'ID du salon "${channelName}" dans le .env :`, error);
+            otterlogs.error(`Erreur lors de l'enregistrement de l'ID du salon "${channelName}" dans le .env : ${error}`);
           }
         }
       }
     } catch (error) {
-      otterlogs.error(`Erreur lors de la création de la catégorie, des salons et du rôle :`, error);
+      otterlogs.error(`Erreur lors de la création de la catégorie, des salons et du rôle : ${error}`);
     }
 
     // Check la config Rcon
