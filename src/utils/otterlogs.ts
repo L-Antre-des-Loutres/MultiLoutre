@@ -1,4 +1,4 @@
-import { Client, TextChannel, WebhookClient } from "discord.js";
+import { WebhookClient } from "discord.js";
 
 const logStyles = {
   success: "\u001b[32m[success]\u001b[0m",
@@ -13,19 +13,19 @@ const logStyles = {
 const otterlogs = {
   success: (message: string): void => {
     console.log(logStyles.success, message);
-      sendLogMessage(message, false, "success");
+    sendLogMessage(message, false, "success");
   },
   log: (message: string): void => {
     console.log(logStyles.info, message);
-      sendLogMessage(message, false, "log");
+    sendLogMessage(message, false, "log");
   },
   warn: (message: string): void => {
     console.warn(logStyles.warn, message);
-      sendLogMessage(message, false, "warn");
+    sendLogMessage(message, false, "warn");
   },
   error: (message: string): void => {
     console.error(logStyles.error, message);
-      sendLogMessage(message, true, "error");
+    sendLogMessage(message, true, "error");
   },
   important: (message: string): void => {
     console.log(`${logStyles.importantColor}${message}${logStyles.resetColor}`);
