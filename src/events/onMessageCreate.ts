@@ -28,6 +28,8 @@ export default {
 
       switch (message.channelId) {
         case process.env.DISCU_MC:
+
+          // Vérification de l'activation du serveur primaire
           if (process.env.ENABLE_PRIMARY_SERVER_RCON && process.env.ENABLE_PRIMARY_SERVER_RCON === "true") {
             const rcon_primaire = new Rcon({
               host: "194.164.76.165", // "??" gère le cas où la valeur est null en remplaçant par une chaîne vide
@@ -45,10 +47,12 @@ export default {
             }
           }
 
+          // Vérification de l'activation du serveur secondaire
           if (process.env.ENABLE_SECONDARY_SERVER_RCON && process.env.ENABLE_SECONDARY_SERVER_RCON === "true") {
             // otterlogs.log(`RCON : ${rcon_secondaire.config.host} ${rcon_secondaire.config.port} ${rcon_secondaire.config.password}`);
             let serveurSecondaire: Serveur;
 
+            // Récupération du serveur secondaire pour déterminer le type de serveur
             const serveurSecondaireId = await serverParameters.getSecondaryServeurId();
             if (serveurSecondaireId !== null) {
               const result = await serveur.getServeurById(serveurSecondaireId);
@@ -63,6 +67,9 @@ export default {
               return;
             }
 
+            // Vérification du type de serveur secondaire
+
+            // Si le serveur secondaire est un serveur Palworld
             if (serveurSecondaire.jeu == "Palworld") {
               try {
 
@@ -94,6 +101,8 @@ export default {
               } catch (error) {
                 otterlogs.error(`Failed to send message to secondary server : ${error}`);
               }
+
+              // Si le serveur secondaire est un serveur Minecraft
             } else if (serveurSecondaire.jeu == "Minecraft") {
               const rcon_secondaire = new Rcon({
                 host: (await serverParameters.getSecondaryServeurHost()) ?? "",
@@ -110,34 +119,13 @@ export default {
               catch (error) {
                 otterlogs.error(`Failed to send message to secondary server : ${error}`);
               }
+
+              // Si le serveur secondaire n'est pas encore pris en charge
             } else {
-              otterlogs.error(`Le serveur secondaire n'est pas un serveur Minecraft ou Palworld...`);
+              otterlogs.error(`Le serveur secondaire ${serveurSecondaire.nom} (${serveurSecondaire.jeu}) n'est pas encore pris en charge pour l'envoi de messages.`);
             }
             break;
           }
-        
-        case process.env.DISCU_MC_PARTENAIRE:
-          if (process.env.ENABLE_PARTENAIRE_SERVER_RCON && process.env.ENABLE_PARTENAIRE_SERVER_RCON === "true") {
-            const rcon_partenaire = new Rcon({
-              host: (await serverParameters.getPartenaireServeurHost()) ?? "",
-              port: 25580,
-              password: await serverParameters.getPartenaireRconPassword() ?? "",
-            });
-            // otterlogs.log(`RCON : ${rcon_partenaire.config.host} ${rcon_partenaire.config.port} ${rcon_partenaire.config.password}`);
-        
-            try {
-              // Envoi au deuxième serveur
-              await (rcon_partenaire).connect();
-              await (rcon_partenaire).send(message_to_send);
-              await (rcon_partenaire).end();
-            } catch (error) {
-              otterlogs.error(`Failed to send message to secondary server : ${error}`);
-            }
-          }
-        break;
-        default:
-          otterlogs.error(`Le salon ${message.channelId} n'est pas configuré pour envoyer des messages au serveur Minecraft... Cette situation ne devrait pas pouvoir arriver !`);
-        break;
       }
     }
   },
