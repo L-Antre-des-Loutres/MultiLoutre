@@ -39,26 +39,33 @@ export const command: SlashCommand = {
 
         // Pour les autres actions on va utiliser un select menu
         const serveursList = await db.getAllGlobalActifServeurs();
-        const selectMenu = new StringSelectMenuBuilder()
-            .setCustomId('serveur_select')
-            .setPlaceholder('Sélectionnez un serveur')
-            .addOptions(
-                serveursList.results.map(serveur => {
-                    let labelGame: string;
-
-                    if (serveur.name === serveur.jeu) {
-                        labelGame = serveur.jeu;
-                    } else {
-                        labelGame = serveur.jeu + " : " + serveur.nom;
-                    }
-
-                    return {
-                        label: labelGame,
-                        value: `${serveur.id.toString()}|${action}|${interaction.user.id}`,
-                        description: `${serveur.version} - ${serveur.jeu}`,
-                    };
-                })
-            );
+        const options = serveursList.results.length > 0
+        ? serveursList.results.map(serveur => {
+            let labelGame: string;
+    
+            if (serveur.name === serveur.jeu) {
+                labelGame = serveur.jeu;
+            } else {
+                labelGame = `${serveur.jeu} : ${serveur.nom}`;
+            }
+    
+            return {
+                label: labelGame,
+                value: `${serveur.id.toString()}|${action}|${interaction.user.id}`,
+                description: `${serveur.version} - ${serveur.jeu}`,
+            };
+        })
+        : [{
+            label: "Aucun serveur disponible",
+            value: "none",
+            description: "Il n'y a actuellement aucun serveur à afficher.",
+        }];
+    
+    const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId('serveur_select')
+        .setPlaceholder('Sélectionnez un serveur')
+        .addOptions(options);
+    
         const row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(selectMenu);
         const embed = new EmbedBuilder()

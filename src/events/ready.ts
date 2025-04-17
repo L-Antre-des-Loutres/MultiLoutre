@@ -8,7 +8,7 @@ const event: BotEvent = {
   once: true,
   async execute(client: Client) {
     otterlogs.success(`Ready! Logged in as ${client.user?.tag}`);
-    client.user?.setActivity("Minecraft");
+    client.user?.setActivity("Palworld");
 
     // Noms des salons à créer pour le fonctionnement de mineotter
     const channelNames: string[] = [

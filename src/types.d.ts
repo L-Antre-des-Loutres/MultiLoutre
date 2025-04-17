@@ -18,6 +18,8 @@ declare global {
             DB_PASSWORD: string;
             DB_NAME: string;
 
+            PALWORLD_STRING: string;
+
         }
     }
 }

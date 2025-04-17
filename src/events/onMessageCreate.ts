@@ -86,7 +86,7 @@ export default {
                   url: 'http://127.0.0.1:8212/v1/api/announce',
                   headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Basic YWRtaW46VWplenVnNzU='
+                    'Authorization': process.env.PALWORLD_STRING,
                   },
                   data: data
                 };
