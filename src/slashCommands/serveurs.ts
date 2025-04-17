@@ -44,17 +44,18 @@ export const command: SlashCommand = {
             .setPlaceholder('Sélectionnez un serveur')
             .addOptions(
                 serveursList.results.map(serveur => {
-                    let isModdedText = "Serveur Moddé : Inconnu";
-                    if (serveur.modpack && serveur.modpack.includes("Minecraft Vanilla")) {
-                        isModdedText = "Serveur Vanilla";
+                    let labelGame: string;
+
+                    if (serveur.name === serveur.jeu) {
+                        labelGame = serveur.jeu;
                     } else {
-                        isModdedText = "Serveur Moddé : " + serveur.modpack;
+                        labelGame = serveur.jeu + " : " + serveur.nom;
                     }
 
                     return {
-                        label: serveur.nom,
+                        label: labelGame,
                         value: `${serveur.id.toString()}|${action}|${interaction.user.id}`,
-                        description: `${serveur.version} - ${isModdedText}`,
+                        description: `${serveur.version} - ${serveur.jeu}`,
                     };
                 })
             );
@@ -65,7 +66,7 @@ export const command: SlashCommand = {
             .setDescription("Sélectionnez un serveur dans le menu déroulant ci-dessous.")
             .setColor(process.env.BOT_COLOR as ColorResolvable || "#FFFFFF")
             .setFooter({
-                text: "Mineotter",
+                text: "MultiLoutre",
                 iconURL: interaction.client.user?.displayAvatarURL() || '',
             })
             .setTimestamp();

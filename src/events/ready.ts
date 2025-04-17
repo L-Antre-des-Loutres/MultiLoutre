@@ -12,13 +12,13 @@ const event: BotEvent = {
 
     // Noms des salons à créer pour le fonctionnement de mineotter
     const channelNames: string[] = [
-      "🌌・discu-mc",
-      "🌌・chat-mc-partenaire", // Attention à ne pas avoir deux fois le même nom de salon ! Aussi, quand celui la doit être remplacé, il ne faut pas oublier de changer les 2 instances.
-      "🦦・logs-mineotter",
+     // "🌌・discu-mc",
+     // "🌌・chat-mc-partenaire", // Attention à ne pas avoir deux fois le même nom de salon ! Aussi, quand celui la doit être remplacé, il ne faut pas oublier de changer les 2 instances.
+      "🦦・logs-multiloutre",
       "❌・logs-erreur",
-      "🟩・mcmyadmin-primaire",
-      "🟩・mcmyadmin-secondaire",
-      "🔐・mcmyadmin-partenaire"
+      // "🟩・mcmyadmin-primaire",
+      // "🟩・mcmyadmin-secondaire",
+      // "🔐・mcmyadmin-partenaire"
     ];
 
     // ID du serveur

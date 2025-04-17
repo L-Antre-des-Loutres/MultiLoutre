@@ -2,6 +2,9 @@ import { Events, Message } from "discord.js";
 import { ServeurParametersController } from "../database/serveursParametersController";
 import { Rcon } from "rcon-client";
 import otterlogs from "../utils/otterlogs";
+import { Serveur, ServeursDatabase } from "../database/serveursController";
+import axios from 'axios';
+import { cp } from "fs";
 
 export default {
   name: Events.MessageCreate,
@@ -9,7 +12,7 @@ export default {
     if (message.author.bot) return; // Ignore les messages des bots
 
     const messageContent = message.content.toLowerCase();
-    if (messageContent.includes("mineotter")) {
+    if (messageContent.includes("multiloutre")) {
       message.react("🦦");
     }
 
@@ -18,9 +21,10 @@ export default {
 
       const author_name = escapeMinecraftJson(message.author.username);
       const discord_message = escapeMinecraftJson(replaceEmojis(message.content));
-      const message_to_send = `tellraw @a ["",{"text":"<${author_name}>","color":"#7289DA"},{"text":" ${discord_message}"}]`;
-  
+      let message_to_send = `tellraw @a ["",{"text":"<${author_name}>","color":"#7289DA"},{"text":" ${discord_message}"}]`;
+
       const serverParameters = new ServeurParametersController();
+      const serveur = new ServeursDatabase();
 
       switch (message.channelId) {
         case process.env.DISCU_MC:
@@ -31,7 +35,6 @@ export default {
               password: await serverParameters.getRconPassword() ?? "",
             });
             // otterlogs.log(`RCON : ${rcon_primaire.config.host} ${rcon_primaire.config.port} ${rcon_primaire.config.password}`);
-
             try {
               // Envoi au premier serveur
               await (rcon_primaire).connect();
@@ -43,23 +46,76 @@ export default {
           }
 
           if (process.env.ENABLE_SECONDARY_SERVER_RCON && process.env.ENABLE_SECONDARY_SERVER_RCON === "true") {
-            const rcon_secondaire = new Rcon({
-              host: (await serverParameters.getSecondaryServeurHost()) ?? "",
-              port: 25574,
-              password: await serverParameters.getRconPassword() ?? "",
-            });
             // otterlogs.log(`RCON : ${rcon_secondaire.config.host} ${rcon_secondaire.config.port} ${rcon_secondaire.config.password}`);
-        
-            try {
-              // Envoi au deuxième serveur
-              await (rcon_secondaire).connect();
-              await (rcon_secondaire).send(message_to_send);
-              await (rcon_secondaire).end();
-            } catch (error) {
-              otterlogs.error(`Failed to send message to secondary server : ${error}`);
+            let serveurSecondaire: Serveur;
+
+            const serveurSecondaireId = await serverParameters.getSecondaryServeurId();
+            if (serveurSecondaireId !== null) {
+              const result = await serveur.getServeurById(serveurSecondaireId);
+              if (result.results.length > 0) {
+                serveurSecondaire = result.results[0];
+              } else {
+                otterlogs.error("Impossible de récupérer le serveur secondaire.");
+                return;
+              }
+            } else {
+              otterlogs.error("Impossible de récupérer l'ID du serveur secondaire.");
+              return;
             }
+
+            if (serveurSecondaire.jeu == "Palworld") {
+              try {
+
+                // Envoi un messsage sur le serveur palworld
+                const message_to_send = message.member?.user.displayName + " : " + message.content;
+
+                let data = JSON.stringify({
+                  "message": message_to_send,
+                });
+
+                let config = {
+                  method: 'post',
+                  maxBodyLength: Infinity,
+                  url: 'http://127.0.0.1:8212/v1/api/announce',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic YWRtaW46VWplenVnNzU='
+                  },
+                  data: data
+                };
+
+                axios(config)
+                  .then((response) => {
+                    // console.log(JSON.stringify(response.data));
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+              } catch (error) {
+                otterlogs.error(`Failed to send message to secondary server : ${error}`);
+              }
+            } else if (serveurSecondaire.jeu == "Minecraft") {
+              const rcon_secondaire = new Rcon({
+                host: (await serverParameters.getSecondaryServeurHost()) ?? "",
+                port: 25574,
+                password: await serverParameters.getRconPassword() ?? "",
+              });
+
+              try {
+                // Envoi au deuxième serveur
+                await (rcon_secondaire).connect();
+                await (rcon_secondaire).send(message_to_send);
+                await (rcon_secondaire).end();
+              }
+              catch (error) {
+                otterlogs.error(`Failed to send message to secondary server : ${error}`);
+              }
+            } else {
+              otterlogs.error(`Le serveur secondaire n'est pas un serveur Minecraft ou Palworld...`);
+            }
+            break;
           }
-        break;
+        
         case process.env.DISCU_MC_PARTENAIRE:
           if (process.env.ENABLE_PARTENAIRE_SERVER_RCON && process.env.ENABLE_PARTENAIRE_SERVER_RCON === "true") {
             const rcon_partenaire = new Rcon({

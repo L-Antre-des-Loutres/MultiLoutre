@@ -1,4 +1,4 @@
-import { ColorResolvable, Events, Interaction } from "discord.js";
+import { Events, Interaction } from "discord.js";
 import { BotEvent } from "../types";
 import otterlogs from "../utils/otterlogs";
 import { ServeursDatabase } from "../database/serveursController";
