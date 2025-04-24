@@ -15,10 +15,9 @@ export const command: SlashCommand =  {
         version = process.env.VERSION || "0.0.0";
 
         const embed = new EmbedBuilder()
-            .setTitle("Dépôt GitHub de Mineotter")
-            .setURL("https://github.com/Corentin-cott/mineotter-bot")
+            .setTitle("Dépôt GitHub de Multiloutre")
+            .setURL("https://github.com/L-Antre-des-Loutres/MultiLoutre")
             .setDescription(`Et voilà pour toi le lien de mon magnifique dépôt GitHub !\nJe suis actuellement en version ${version}.`)
-            .setImage("https://github.com/Corentin-cott/mineotter-bot/raw/main/imgs/logo.png")
             .setColor(bot_color as ColorResolvable)
             .setFooter({
                 text: "Mineotter",
