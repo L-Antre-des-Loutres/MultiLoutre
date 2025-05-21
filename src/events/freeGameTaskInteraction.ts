@@ -24,7 +24,7 @@ export default {
     name: Events.InteractionCreate,
     once: false,
     execute: async (interaction: Interaction): Promise<void> => {
-        const CHANNEL_ID: string = process.env.BOT_ADMIN || "";
+        const CHANNEL_ID: string = process.env.DISCU_JEUX || "";
         const PING_ID: string = process.env.PING_JEUX_ID || "";
         const BOT_COLOR = process.env.BOT_COLOR || "#d1930d";
 

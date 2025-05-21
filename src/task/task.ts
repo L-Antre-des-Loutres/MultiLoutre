@@ -156,11 +156,11 @@ export async function task(client: Client, guildId: string) {
         sentGames.add(game.id);
       }
       saveSentGames(sentGames);
-      otterlogs.log(`${newGames.length} nouveau(x) jeu(x) annoncé(s).`);
+      otterlogs.success(`${newGames.length} nouveau(x) jeu(x) annoncé(s).`);
     } else {
       otterlogs.log("Aucun nouveau jeu gratuit détecté.");
     }
   }, CHECK_INTERVAL);
 
-  otterlogs.success("Tâche de vérification des jeux gratuits effectuée.");
+  otterlogs.success("Tâche de vérification des jeux gratuits commencé.");
 }
